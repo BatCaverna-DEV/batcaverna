@@ -5,7 +5,13 @@ import { Op } from 'sequelize'
 class ProfessorController {
 
     index = async (req, res)=>{
-        const professores = await Professor.findAll()
+        const professores = await Professor.findAll({
+            include: [{
+                model: Usuario,
+                as: 'usuario',
+                attributes: ['id', 'username', 'categoria', 'status'] // não traga o password
+            }]
+        })
         return res.status(200).json(professores)
     }
 
