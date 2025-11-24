@@ -38,21 +38,21 @@
     </nav>
 
     <div class="row my-3 p-1">
-      <div class="col-sm-1 fw-bolder">CÓDIGO</div>
       <div class="col-sm-3 fw-bolder">DESCRIÇÃO</div>
       <div class="col-sm-3 fw-bolder">PROFESSOR</div>
-      <div class="col-sm-2 fw-bolder">TURMA</div>
-      <div class="col-sm-1 fw-bolder text-center">CARGA</div>
+      <div class="col-sm-1 fw-bolder">TURMA</div>
+      <div class="col-sm-2 fw-bolder">HORÁRIO</div>
+      <div class="col-sm-1 fw-bolder text-center">H/A</div>
       <div class="col-sm-1 fw-bolder text-center">MINISTRADA</div>
       <div class="col-sm-1"></div>
     </div>
 
     <div class="row mt-1 bg-body-tertiary p-2 selecionado" v-for="diario in diarios">
 
-      <div class="col-sm-1">{{ diario.codigo }}</div>
-      <div class="col-sm-3">{{ diario.descricao }}</div>
+      <div class="col-sm-3">{{ diario.codigo +' - '+ diario.descricao }}</div>
       <div class="col-sm-3">{{diario.professor.nome}}</div>
-      <div class="col-sm-2">{{diario.turma.descricao}}</div>
+      <div class="col-sm-1">{{diario.turma.descricao}}</div>
+      <div class="col-sm-2">{{diario.horario}}</div>
       <div class="col-sm-1 text-center">{{diario.carga}}</div>
       <div class="col-sm-1 text-center">{{diario.ministrada}}</div>
 

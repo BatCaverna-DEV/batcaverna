@@ -29,6 +29,10 @@ class UsuarioController{
                 return res.status(401).json({'message': 'Usuário não encontrado!'})
             }
 
+            if(user.categoria != 2){
+                return res.status(401).json({message: 'Acesso para professor ainda não permitido!'})
+            }
+
             const isMatch = await bcrypt.compare(password, user.password)
             if(!isMatch){
                 return res.status(401).json({'message': 'Senha Incorreta!'})

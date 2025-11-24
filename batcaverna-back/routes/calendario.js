@@ -5,5 +5,6 @@ import auth from '../helpers/auth.js'
 
 router.get('/', auth, calendario.index);
 router.post('/cadastro', auth, calendario.cadastrar)
+router.post('/gerar', calendario.testar)
 
 export default router

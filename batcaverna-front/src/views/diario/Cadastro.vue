@@ -9,7 +9,7 @@
   const router = useRouter()
 
   let usuario = getUser()
-  let diario = ref({codigo: 0, descricao: '', carga: 0, professor_id:0, turma_id:0})
+  let diario = ref({codigo: 0, descricao: '', carga: 0, professor_id:0, turma_id:0, horario: ''})
   let professores = ref({})
   let turmas = ref({})
   let erro = ref('')
@@ -83,7 +83,7 @@
 
       <div class="row mt-3">
 
-        <div class="col-sm-6">
+        <div class="col-sm-5">
           <label for="professor">PROFESSOR</label>
           <select v-model="diario.professor_id" class="form-select" id="professor" required>
             <option v-for="professor in professores"
@@ -94,7 +94,7 @@
           </select>
         </div>
 
-        <div class="col-sm-6">
+        <div class="col-sm-5">
           <label for="turma">TURMA</label>
           <select v-model="diario.turma_id" class="form-select" id="turma" required>
             <option v-for="turma in turmas"
@@ -103,6 +103,11 @@
               {{ turma.descricao }}
             </option>
           </select>
+        </div>
+
+        <div class="col-sm-2">
+          <label for="horario">HORÁRIO</label>
+          <input v-model="diario.horario" type="text" class="form-control" id="horario" required>
         </div>
 
       </div>

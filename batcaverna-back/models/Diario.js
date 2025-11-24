@@ -26,6 +26,9 @@ const Diario = banco.sequelize.define('diarios', {
     ministrada:{
         type: banco.Sequelize.INTEGER,
     },
+    horario:{
+        type: banco.Sequelize.STRING(20),
+    }
 })
 
 Diario.belongsTo(Professor, {
