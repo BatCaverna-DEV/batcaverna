@@ -69,7 +69,7 @@
       <div class="col-sm-2">{{ professor.siape }}</div>
       <div class="col-sm-4 ">{{ professor.nome }}</div>
       <div class="col-sm-3 ">{{ professor.email }}</div>
-      <div class="col-sm-2 text-center">{{ statusUsuario(professor.usuario.categoria) }}</div>
+      <div class="col-sm-2 text-center">{{ statusUsuario(professor.usuario?.categoria) }}</div>
       <div class="col-sm-1 text-center d-flex justify-content-end">
         <div class="dropdown">
           <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">

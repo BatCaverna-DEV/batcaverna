@@ -11,7 +11,7 @@ const turmas = ref({})
 
 onMounted(async () => {
 
-  let resposta = await apiFetch('/turma/'+usuario.id);
+  let resposta = await apiFetch('/turma/'+usuario.professor_id);
   if(resposta.ok){
     turmas.value = await resposta.json();
   }else{

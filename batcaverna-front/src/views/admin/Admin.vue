@@ -2,6 +2,19 @@
   import Perfil from "../../components/Perfil.vue";
   import {RouterLink} from "vue-router";
   import NavAdmin from "@/components/NavAdmin.vue";
+  import {getUser} from "@/services/token.js";
+  import {apiFetch} from "@/services/http.js";
+  import {onMounted, ref} from "vue";
+
+  const usuario = getUser();
+  const curso = ref('')
+
+  onMounted(async () => {
+    const resposta2 = await apiFetch('/curso/coordena/'+usuario.professor_id)
+    if(resposta2.ok){
+      curso.value = await resposta2.json();
+    }
+  })
 </script>
 
 <template>
@@ -14,7 +27,7 @@
         <Perfil/>
       </div>
       <div class="col-sm-10">
-        <h3>Bem Vindo ao Sistema</h3>
+        <h3>Bem Vindo ao Sistema ({{curso.descricao}})</h3>
 
         <nav class="navbar navbar-expand-lg bg-body-tertiary">
           <div class="container-fluid">

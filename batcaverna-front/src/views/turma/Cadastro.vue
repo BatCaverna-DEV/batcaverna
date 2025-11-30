@@ -21,7 +21,7 @@ onMounted(async () => {
     let msg = await resposta.json()
     erro.value = msg.message
   }
-  const resposta2 = await apiFetch('/curso/coordena/'+usuario.value.id)
+  const resposta2 = await apiFetch('/curso/coordena/'+usuario.value.professor_id)
   if(resposta2.ok){
     curso.value = await resposta2.json()
     turma.value.curso_id = curso.value.id
