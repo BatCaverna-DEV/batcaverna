@@ -3,9 +3,9 @@ import Professor from "./Professor.js";
 
 const Curso = banco.sequelize.define('cursos', {
     id:{
-        type: banco.Sequelize.INTEGER,
+        type: banco.Sequelize.UUID,
+        defaultValue: banco.Sequelize.UUIDV4,
         primaryKey: true,
-        autoIncrement: true
     },
     descricao: {
         type: banco.Sequelize.STRING(100),

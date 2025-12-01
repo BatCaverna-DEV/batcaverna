@@ -3,9 +3,9 @@ import Calendario from "./Calendario.js";
 
 const Dia = banco.sequelize.define('dias', {
     id:{
-        type: banco.Sequelize.INTEGER,
+        type: banco.Sequelize.UUID,
+        defaultValue: banco.Sequelize.UUIDV4,
         primaryKey: true,
-        autoIncrement: true
     },
     data:{
         type: banco.Sequelize.DATE,

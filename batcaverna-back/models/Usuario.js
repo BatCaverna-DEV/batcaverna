@@ -3,9 +3,9 @@ import Professor from './Professor.js'
 
 const Usuario = banco.sequelize.define('usuarios', {
     id:{
-        type: banco.Sequelize.INTEGER,
+        type: banco.Sequelize.UUID,
+        defaultValue: banco.Sequelize.UUIDV4,
         primaryKey: true,
-        autoIncrement: true
     },
     username: {
         type: banco.Sequelize.STRING(100),

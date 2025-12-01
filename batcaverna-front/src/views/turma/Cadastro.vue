@@ -8,7 +8,10 @@ import {getUser} from "@/services/token.js";
 
 const router = useRouter()
 const usuario = ref(getUser())
-let turma = ref({descricao: '', codigo: '', calendario_id:0, curso_id:0})
+
+console.log(usuario)
+
+let turma = ref({descricao: '', codigo: '', calendario_id:'', curso_id:''})
 let erro = ref('')
 let calendarios = ref([])
 let curso = ref({})

@@ -4,9 +4,9 @@ import Turma from "./Turma.js";
 
 const Diario = banco.sequelize.define('diarios', {
     id:{
-        type: banco.Sequelize.INTEGER,
+        type: banco.Sequelize.UUID,
+        defaultValue: banco.Sequelize.UUIDV4,
         primaryKey: true,
-        autoIncrement: true
     },
     codigo:{
         type: banco.Sequelize.INTEGER,

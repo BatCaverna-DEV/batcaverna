@@ -2,9 +2,9 @@ import banco from '../config/banco.js'
 
 const Professor = banco.sequelize.define('professores', {
     id:{
-        type: banco.Sequelize.INTEGER,
+        type: banco.Sequelize.UUID,
+        defaultValue: banco.Sequelize.UUIDV4,
         primaryKey: true,
-        autoIncrement: true
     },
     nome: {
         type: banco.Sequelize.STRING(100),

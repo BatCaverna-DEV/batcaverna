@@ -4,9 +4,9 @@ import Calendario from "./Calendario.js";
 
 const Turma = banco.sequelize.define('turmas', {
     id:{
-        type: banco.Sequelize.INTEGER,
+        type: banco.Sequelize.UUID,
+        defaultValue: banco.Sequelize.UUIDV4,
         primaryKey: true,
-        autoIncrement: true
     },
     codigo: {
         type: banco.Sequelize.STRING(50),

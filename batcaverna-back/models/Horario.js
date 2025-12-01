@@ -4,9 +4,9 @@ import Dia from "./Dia.js";
 
 const Horario = banco.sequelize.define('horarios', {
     id:{
-        type: banco.Sequelize.INTEGER,
+        type: banco.Sequelize.UUID,
+        defaultValue: banco.Sequelize.UUIDV4,
         primaryKey: true,
-        autoIncrement: true
     },
     ordem:{
         type: banco.Sequelize.INTEGER,

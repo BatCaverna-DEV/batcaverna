@@ -3,9 +3,9 @@ import banco from '../config/banco.js'
 const Calendario = banco.sequelize.define('calendarios', {
 
     id:{
-        type: banco.Sequelize.INTEGER,
+        type: banco.Sequelize.UUID,
+        defaultValue: banco.Sequelize.UUIDV4,
         primaryKey: true,
-        autoIncrement: true
     },
     descricao:{
         type: banco.Sequelize.STRING(100),
