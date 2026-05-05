@@ -1,21 +1,20 @@
 <script setup>
+  import { getUser } from "@/services/token.js";
 
-  import {getUser} from "@/services/token.js";
-  import {ref} from "vue";
-
-  const playload = getUser()
-  const user = ref({username: playload.username, email: playload.email, nome: playload.nome});
-
+  const playload = getUser();
+  const user = { username: playload.username, email: playload.email, nome: playload.nome };
 </script>
 
 <template>
-    <div class="mx-auto p-3 shadow rounded rounded-2 content">
-      <img src="../assets/perfil.png" alt="" class="d-block mx-auto w-50 rounded rounded-circle">
-      <h3 class="text-center mt-5" >{{user.nome}}</h3>
-      <h5 class="text-center mt-2">Coordenador</h5>
+  <div class="perfil-card">
+    <div class="perfil-avatar">
+      <i class="fa-solid fa-user"></i>
     </div>
+    <div class="perfil-nome">{{ user.nome }}</div>
+    <div class="perfil-cargo">Coordenador</div>
+    <div class="perfil-info">
+      <div><i class="fa-solid fa-at me-2"></i>{{ user.username }}</div>
+      <div><i class="fa-solid fa-envelope me-2"></i>{{ user.email }}</div>
+    </div>
+  </div>
 </template>
-
-<style scoped>
-
-</style>

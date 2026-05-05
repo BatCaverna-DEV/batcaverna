@@ -2,6 +2,7 @@
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap/dist/js/bootstrap.bundle.js'
 import '../src/assets/all.css'
+import '../src/assets/estilo.css'
 
 import { RouterView } from 'vue-router'
 import Navbar from "@/components/Navbar.vue";

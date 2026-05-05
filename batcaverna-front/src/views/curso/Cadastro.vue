@@ -1,91 +1,82 @@
 <script setup>
+  import { onMounted, ref } from 'vue'
+  import { apiFetch } from "@/services/http.js";
+  import { useRouter } from 'vue-router'
+  import NavAdmin from "@/components/NavAdmin.vue";
 
-import {onMounted, ref} from 'vue'
-import {apiFetch} from "@/services/http.js";
-import {useRouter} from 'vue-router'
-import NavAdmin from "@/components/NavAdmin.vue";
+  const router = useRouter()
+  let curso       = ref({ descricao: '', professor_id: 0 })
+  let professores = ref({})
+  let erro        = ref('')
 
-const router = useRouter()
-let curso = ref({descricao: '', professor_id: 0})
-let professores = ref({})
-let erro = ref('')
-
-async function salvar(){
-  erro.value = ''
-  try{
-    const resposta = await apiFetch("/curso/cadastro", {
-      method: "POST",
-      body: curso.value
-    })
-    if(resposta.ok){
-      alert('Curso cadastrado com sucesso!')
-      router.push('/curso/lista')
-    }else{
-      const msg = await resposta.json()
-      erro.value = `${resposta.status} - ${msg.message}`
+  async function salvar() {
+    erro.value = ''
+    try {
+      const resposta = await apiFetch("/curso/cadastro", {
+        method: "POST",
+        body: curso.value
+      })
+      if (resposta.ok) {
+        router.push('/curso/lista')
+      } else {
+        const msg = await resposta.json()
+        erro.value = `${resposta.status} - ${msg.message}`
+      }
+    } catch (err) {
+      erro.value = `${err.value}`
     }
-  }catch(err){
-    erro.value = `${err.value}`
-  }
-}
-
-onMounted(async () => {
-
-  const resposta = await apiFetch('/professor' )
-  if(resposta.ok){
-    professores.value = await resposta.json()
   }
 
-})
-
+  onMounted(async () => {
+    const resposta = await apiFetch('/professor')
+    if (resposta.ok) {
+      professores.value = await resposta.json()
+    }
+  })
 </script>
 
 <template>
   <NavAdmin/>
-  <div class="container shadow p-3">
-    <nav class="navbar bg-body-tertiary">
-      <div class="container-fluid">
-        <h4>Cadastro de Curso</h4>
-        <a class="btn btn-secondary" href="/curso/lista">Voltar</a>
-      </div>
-    </nav>
+  <div class="container pagina">
 
-    <div v-if="erro" class="alert alert-danger" role="alert">
-      <strong>ERRO: </strong> {{ erro }}
+    <div class="pagina-header">
+      <h4><i class="fa-solid fa-layer-group me-2"></i>Novo Curso</h4>
+      <a class="btn btn-outline-secondary btn-sm" href="/curso/lista">
+        <i class="fa-solid fa-arrow-left me-1"></i>Voltar
+      </a>
     </div>
 
-    <form @submit.prevent="salvar">
-      <div class="row mt-3">
-        <div class="col-sm">
-          <label for="descricao">DESCRIÇÃO DO CURSO</label>
-          <input v-model="curso.descricao" type="text" class="form-control" id="descricao" required>
-        </div>
+    <div class="pagina-body">
+
+      <div v-if="erro" class="alert alert-danger py-2" role="alert">
+        <i class="fa-solid fa-circle-exclamation me-2"></i>{{ erro }}
       </div>
 
-      <div class="row mt-3">
-        <div class="col-sm">
-          <label for="professor_id">COORDENADOR</label>
-          <select v-model="curso.professor_id" class="form-select" id="professor_id" required>
-            <option v-for="professor in professores"
-                    :key="professor.id"
-                    :value="professor.id">
-              {{ professor.nome }}
-            </option>
-          </select>
+      <form @submit.prevent="salvar">
+        <div class="row g-3">
+          <div class="col-12">
+            <label for="descricao" class="form-label">Descrição do Curso</label>
+            <input v-model="curso.descricao" type="text" id="descricao" required class="form-control" placeholder="Nome completo do curso">
+          </div>
+          <div class="col-sm-8">
+            <label for="professor_id" class="form-label">Coordenador</label>
+            <select v-model="curso.professor_id" id="professor_id" required class="form-select">
+              <option value="0" disabled>Selecione o coordenador...</option>
+              <option v-for="professor in professores" :key="professor.id" :value="professor.id">
+                {{ professor.nome }}
+              </option>
+            </select>
+          </div>
         </div>
-      </div>
 
-      <div class="row mt-3 ">
-        <div class="col-sm d-flex justify-content-end">
-          <button type="submit" class="btn btn-success">Salvar</button>
+        <div class="form-footer">
+          <a class="btn btn-outline-secondary" href="/curso/lista">Cancelar</a>
+          <button type="submit" class="btn btn-dark px-4">
+            <i class="fa-solid fa-floppy-disk me-2"></i>Salvar
+          </button>
         </div>
-      </div>
+      </form>
 
-    </form>
-
+    </div>
   </div>
 </template>
-
-<style scoped>
-
-</style>

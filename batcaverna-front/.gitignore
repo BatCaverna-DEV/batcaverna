@@ -1,5 +1,17 @@
-# Logs
-logs
+# ── Dependências ────────────────────────────────────────────
+node_modules/
+
+# ── Variáveis de ambiente ────────────────────────────────────
+.env
+.env.local
+.env.*.local
+
+# ── Build / dist ─────────────────────────────────────────────
+dist/
+dist-ssr/
+
+# ── Logs ────────────────────────────────────────────────────
+logs/
 *.log
 npm-debug.log*
 yarn-debug.log*
@@ -7,30 +19,29 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-node_modules
-.DS_Store
-dist
-dist-ssr
-coverage
-*.local
+# ── Cache e gerados ──────────────────────────────────────────
+.eslintcache
+*.tsbuildinfo
+.vite/
+.cache/
 
-# Editor directories and files
-.vscode/*
+# ── Testes ──────────────────────────────────────────────────
+coverage/
+__screenshots__/
+/cypress/videos/
+/cypress/screenshots/
+
+# ── Sistema operacional ──────────────────────────────────────
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ── Editores / IDEs ──────────────────────────────────────────
+.vscode/
 !.vscode/extensions.json
-.idea
+.idea/
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
-
-*.tsbuildinfo
-
-.eslintcache
-
-# Cypress
-/cypress/videos/
-/cypress/screenshots/
-
-# Vitest
-__screenshots__/

@@ -1,78 +1,80 @@
 <script setup>
+  import NavAdmin from "@/components/NavAdmin.vue";
+  import { ref, onMounted } from "vue";
+  import { apiFetch } from "@/services/http.js";
+  import { getUser } from "@/services/token.js";
 
-import NavAdmin from "@/components/NavAdmin.vue";
-import {ref, onMounted} from "vue";
-import {apiFetch} from "@/services/http.js";
-import {getUser} from "@/services/token.js";
+  const usuario = getUser()
+  const turmas  = ref([])
 
-const usuario = getUser()
-
-const turmas = ref({})
-
-onMounted(async () => {
-
-  let resposta = await apiFetch('/turma/'+usuario.professor_id);
-  if(resposta.ok){
-    turmas.value = await resposta.json();
-  }else{
-    let msg = await resposta.json()
-    alert('ERRO '+resposta.status+': '+msg.message)
-    router.push('/admin')
-  }
-})
-
+  onMounted(async () => {
+    let resposta = await apiFetch('/turma/' + usuario.professor_id);
+    if (resposta.ok) {
+      turmas.value = await resposta.json();
+    } else {
+      let msg = await resposta.json()
+      alert('ERRO ' + resposta.status + ': ' + msg.message)
+    }
+  })
 </script>
 
 <template>
   <NavAdmin/>
-  <div class="container shadow p-3">
+  <div class="container pagina">
 
-    <nav class="navbar bg-body-tertiary">
-      <div class="container-fluid">
-        <h4>Turmas</h4>
-        <span>
-          <a class="btn btn-primary mx-1" href="/turma/cadastro">Novo</a>
-          <a class="btn btn-secondary mx-1" href="/admin">Voltar</a>
-        </span>
+    <div class="pagina-header">
+      <h4><i class="fa-solid fa-users me-2"></i>Turmas</h4>
+      <div class="d-flex gap-2">
+        <a class="btn btn-dark btn-sm px-3" href="/turma/cadastro">
+          <i class="fa-solid fa-plus me-1"></i>Nova
+        </a>
+        <a class="btn btn-outline-secondary btn-sm" href="/admin">
+          <i class="fa-solid fa-arrow-left me-1"></i>Voltar
+        </a>
       </div>
-    </nav>
-
-    <div class="row my-3 p-1">
-      <div class="col-sm-2 fw-bolder">CÓDIGO</div>
-      <div class="col-sm-2 fw-bolder">DESCRIÇÃO</div>
-      <div class="col-sm-4 fw-bolder">CURSO</div>
-      <div class="col-sm-3 fw-bolder">CALENDÁRIO</div>
-      <div class="col-sm-1"></div>
     </div>
 
-    <div class="row mt-1 bg-body-tertiary p-2 selecionado" v-for="turma in turmas">
-
-      <div class="col-sm-2">{{ turma.codigo }}</div>
-      <div class="col-sm-2">{{ turma.descricao }}</div>
-      <div class="col-sm-4">{{turma.curso.descricao}}</div>
-      <div class="col-sm-3">{{`${turma.calendario.descricao} - ${turma.calendario.ano}.${turma.calendario.semestre}`}}</div>
-
-      <div class="col-sm-1 text-center d-flex justify-content-end">
-        <div class="dropdown">
-          <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-            <i class="fa-solid fa-bars"></i>
-          </button>
-          <ul class="dropdown-menu dropdown-menu-end">
-            <li><a class="dropdown-item" href="#">Editar</a></li>
-            <li><a class="dropdown-item" href="#">Excluir</a></li>
-          </ul>
-        </div>
+    <div class="pagina-body">
+      <div class="table-responsive">
+        <table class="table table-hover mb-0">
+          <thead>
+            <tr>
+              <th style="width:12%">Código</th>
+              <th style="width:18%">Descrição</th>
+              <th>Curso</th>
+              <th style="width:22%">Calendário</th>
+              <th style="width:5%"></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="turma in turmas" :key="turma.id">
+              <td><span class="badge bg-secondary">{{ turma.codigo }}</span></td>
+              <td class="fw-semibold">{{ turma.descricao }}</td>
+              <td>{{ turma.curso.descricao }}</td>
+              <td class="text-muted">
+                {{ turma.calendario.descricao }} —
+                {{ turma.calendario.ano }}.{{ turma.calendario.semestre }}
+              </td>
+              <td class="text-end">
+                <div class="dropdown">
+                  <button class="btn btn-sm btn-outline-secondary" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="fa-solid fa-ellipsis-vertical"></i>
+                  </button>
+                  <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+                    <li><a class="dropdown-item" href="#"><i class="fa-solid fa-pen me-2 text-secondary"></i>Editar</a></li>
+                    <li><hr class="dropdown-divider my-1"></li>
+                    <li><a class="dropdown-item text-danger" href="#"><i class="fa-solid fa-trash me-2"></i>Excluir</a></li>
+                  </ul>
+                </div>
+              </td>
+            </tr>
+            <tr v-if="turmas.length === 0">
+              <td colspan="5" class="text-center text-muted py-4">Nenhuma turma cadastrada.</td>
+            </tr>
+          </tbody>
+        </table>
       </div>
-
     </div>
 
-  </div> <!-- FIM DA DIV MAIOR -->
+  </div>
 </template>
-
-<style scoped>
-
-.selecionado:hover{
-  background-color: darkgray !important;
-}
-
-</style>

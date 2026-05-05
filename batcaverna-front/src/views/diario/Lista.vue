@@ -1,83 +1,88 @@
 <script setup>
-
   import NavAdmin from "@/components/NavAdmin.vue";
-  import {ref, onMounted} from "vue";
-  import {apiFetch} from "@/services/http.js";
-  import {getUser} from "@/services/token.js";
+  import { ref, onMounted } from "vue";
+  import { apiFetch } from "@/services/http.js";
+  import { getUser } from "@/services/token.js";
 
   const usuario = getUser()
-  const diarios = ref({})
+  const diarios = ref([])
 
   onMounted(async () => {
-
-    let resposta = await apiFetch('/diario/'+usuario.professor_id);
-    if(resposta.ok){
+    let resposta = await apiFetch('/diario/' + usuario.professor_id);
+    if (resposta.ok) {
       diarios.value = await resposta.json();
-    }else{
+    } else {
       let msg = await resposta.json()
-      alert('ERRO '+resposta.status+': '+msg.message)
-      router.push('/admin')
+      alert('ERRO ' + resposta.status + ': ' + msg.message)
     }
   })
-
 </script>
 
 <template>
   <NavAdmin/>
+  <div class="container pagina">
 
-  <div class="container shadow p-3">
-
-    <nav class="navbar bg-body-tertiary">
-      <div class="container-fluid">
-        <h4>Diários</h4>
-        <span>
-          <a class="btn btn-primary mx-1" href="/diario/cadastro">Novo</a>
-          <a class="btn btn-secondary mx-1" href="/admin">Voltar</a>
-        </span>
+    <div class="pagina-header">
+      <h4><i class="fa-solid fa-book me-2"></i>Diários</h4>
+      <div class="d-flex gap-2">
+        <a class="btn btn-dark btn-sm px-3" href="/diario/cadastro">
+          <i class="fa-solid fa-plus me-1"></i>Novo
+        </a>
+        <a class="btn btn-outline-secondary btn-sm" href="/admin">
+          <i class="fa-solid fa-arrow-left me-1"></i>Voltar
+        </a>
       </div>
-    </nav>
-
-    <div class="row my-3 p-1">
-      <div class="col-sm-3 fw-bolder">DESCRIÇÃO</div>
-      <div class="col-sm-3 fw-bolder">PROFESSOR</div>
-      <div class="col-sm-1 fw-bolder">TURMA</div>
-      <div class="col-sm-2 fw-bolder">HORÁRIO</div>
-      <div class="col-sm-1 fw-bolder text-center">H/A</div>
-      <div class="col-sm-1 fw-bolder text-center">MINISTRADA</div>
-      <div class="col-sm-1"></div>
     </div>
 
-    <div class="row mt-1 bg-body-tertiary p-2 selecionado" v-for="diario in diarios">
-
-      <div class="col-sm-3">{{ diario.codigo +' - '+ diario.descricao }}</div>
-      <div class="col-sm-3">{{diario.professor.nome}}</div>
-      <div class="col-sm-1">{{diario.turma.descricao}}</div>
-      <div class="col-sm-2">{{diario.horario}}</div>
-      <div class="col-sm-1 text-center">{{diario.carga}}</div>
-      <div class="col-sm-1 text-center">{{diario.ministrada}}</div>
-
-      <div class="col-sm-1 text-center d-flex justify-content-end">
-        <div class="dropdown">
-          <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-            <i class="fa-solid fa-bars"></i>
-          </button>
-          <ul class="dropdown-menu dropdown-menu-end">
-            <li><a class="dropdown-item" href="#">Editar</a></li>
-            <li><a class="dropdown-item" href="#">Excluir</a></li>
-          </ul>
-        </div>
+    <div class="pagina-body">
+      <div class="table-responsive">
+        <table class="table table-hover mb-0">
+          <thead>
+            <tr>
+              <th>Descrição</th>
+              <th>Professor</th>
+              <th style="width:10%">Turma</th>
+              <th style="width:12%">Horário</th>
+              <th class="text-center" style="width:8%">H/A</th>
+              <th class="text-center" style="width:10%">Ministrada</th>
+              <th style="width:5%"></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="diario in diarios" :key="diario.id">
+              <td>
+                <span class="badge bg-secondary me-2" style="font-family:monospace">{{ diario.codigo }}</span>
+                <span class="fw-semibold">{{ diario.descricao }}</span>
+              </td>
+              <td>{{ diario.professor.nome }}</td>
+              <td>{{ diario.turma.descricao }}</td>
+              <td><code class="text-dark">{{ diario.horario }}</code></td>
+              <td class="text-center">{{ diario.carga }}</td>
+              <td class="text-center">
+                <span :class="diario.ministrada >= diario.carga ? 'text-success fw-bold' : ''">
+                  {{ diario.ministrada }}
+                </span>
+              </td>
+              <td class="text-end">
+                <div class="dropdown">
+                  <button class="btn btn-sm btn-outline-secondary" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="fa-solid fa-ellipsis-vertical"></i>
+                  </button>
+                  <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+                    <li><a class="dropdown-item" href="#"><i class="fa-solid fa-pen me-2 text-secondary"></i>Editar</a></li>
+                    <li><hr class="dropdown-divider my-1"></li>
+                    <li><a class="dropdown-item text-danger" href="#"><i class="fa-solid fa-trash me-2"></i>Excluir</a></li>
+                  </ul>
+                </div>
+              </td>
+            </tr>
+            <tr v-if="diarios.length === 0">
+              <td colspan="7" class="text-center text-muted py-4">Nenhum diário cadastrado.</td>
+            </tr>
+          </tbody>
+        </table>
       </div>
-
     </div>
 
   </div>
-
 </template>
-
-<style scoped>
-
-  .selecionado:hover{
-    background-color: darkgray !important;
-  }
-
-</style>
