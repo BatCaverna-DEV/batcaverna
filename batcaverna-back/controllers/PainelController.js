@@ -1,3 +1,4 @@
+import banco     from '../config/banco.js'
 import Diario    from '../models/Diario.js'
 import Professor from '../models/Professor.js'
 import Turma     from '../models/Turma.js'
@@ -7,28 +8,82 @@ import Calendario from '../models/Calendario.js'
 class PainelController {
 
     /**
-     * GET /painel/demanda
-     * Retorna todas as turmas com seus diários e professores atribuídos.
+     * GET /painel/cursos
+     * Lista os cursos ativos com coordenador e contagens de turmas e diários.
+     * Rota pública — sem autenticação.
+     */
+    cursos = async (req, res) => {
+        try {
+            const cursos = await Curso.findAll({
+                where: { status: 1 },
+                include: [{ model: Professor, as: 'professor' }],
+                order: [['descricao', 'ASC']],
+            })
+
+            // Contagem de turmas por curso
+            const contagemTurmas = await Turma.findAll({
+                attributes: [
+                    'curso_id',
+                    [banco.Sequelize.fn('COUNT', banco.Sequelize.col('id')), 'total'],
+                ],
+                where:  { status: 1 },
+                group:  ['curso_id'],
+                raw:    true,
+            })
+
+            // Contagem de diários por curso (via JOIN com turma)
+            const contagemDiarios = await Diario.findAll({
+                attributes: [
+                    [banco.Sequelize.col('turma.curso_id'), 'curso_id'],
+                    [banco.Sequelize.fn('COUNT', banco.Sequelize.col('diarios.id')), 'total'],
+                ],
+                where: { status: 1 },
+                include: [{ model: Turma, as: 'turma', attributes: [] }],
+                group: [banco.Sequelize.col('turma.curso_id')],
+                raw:   true,
+            })
+
+            const mapTurmas  = Object.fromEntries(contagemTurmas.map(r  => [r.curso_id, Number(r.total)]))
+            const mapDiarios = Object.fromEntries(contagemDiarios.map(r => [r.curso_id, Number(r.total)]))
+
+            const resultado = cursos.map(c => ({
+                ...c.toJSON(),
+                qtdTurmas:  mapTurmas[c.id]  ?? 0,
+                qtdDiarios: mapDiarios[c.id] ?? 0,
+            }))
+
+            return res.status(200).json(resultado)
+        } catch (err) {
+            return res.status(500).json({ message: err.message })
+        }
+    }
+
+    /**
+     * GET /painel/demanda?curso_id=:id
+     * Retorna as turmas (com diários e professores) de um curso específico.
      * Rota pública — sem autenticação.
      */
     demanda = async (req, res) => {
         try {
+            const { curso_id } = req.query
+
+            const includeTurma = {
+                model: Turma,
+                as: 'turma',
+                include: [
+                    { model: Curso,      as: 'curso' },
+                    { model: Calendario, as: 'calendario' },
+                ],
+            }
+
+            // Filtra pela turma do curso quando informado
+            if (curso_id) includeTurma.where = { curso_id }
+
             const diarios = await Diario.findAll({
                 where: { status: 1 },
                 include: [
-                    {
-                        model: Professor,
-                        as: 'professor',
-                        required: false,          // LEFT JOIN → diários sem professor aparecem
-                    },
-                    {
-                        model: Turma,
-                        as: 'turma',
-                        include: [
-                            { model: Curso,      as: 'curso' },
-                            { model: Calendario, as: 'calendario' },
-                        ],
-                    },
+                    { model: Professor, as: 'professor', required: false },
+                    includeTurma,
                 ],
                 order: [['codigo', 'ASC']],
             })
