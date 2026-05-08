@@ -30,4 +30,7 @@ app.use('/turma', turma);
 import diario from './routes/diario.js';
 app.use('/diario', diario);
 
+import painel from './routes/painel.js';
+app.use('/painel', painel);
+
 app.listen(port, () => {console.log(`Servidor rodando em http://localhost:${port}`)})
