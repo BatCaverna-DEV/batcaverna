@@ -105,6 +105,39 @@ class PainelController {
     }
 
     /**
+     * GET /painel/meus-diarios/:siape
+     * Retorna todos os diários assumidos pelo professor em qualquer curso/turma.
+     * Rota pública — sem autenticação.
+     */
+    meusDiarios = async (req, res) => {
+        try {
+            const professor = await Professor.findOne({
+                where: { siape: req.params.siape, status: 1 },
+            })
+            if (!professor) {
+                return res.status(404).json({ message: 'SIAPE não encontrado.' })
+            }
+
+            const diarios = await Diario.findAll({
+                where: { professor_id: professor.id, status: 1 },
+                include: [{
+                    model: Turma,
+                    as: 'turma',
+                    include: [{ model: Curso, as: 'curso' }],
+                }],
+                order: [
+                    [{ model: Turma, as: 'turma' }, 'codigo', 'ASC'],
+                    ['codigo', 'ASC'],
+                ],
+            })
+
+            return res.status(200).json(diarios)
+        } catch (err) {
+            return res.status(500).json({ message: err.message })
+        }
+    }
+
+    /**
      * GET /painel/professor/:siape
      * Identifica um professor pelo SIAPE.
      * Rota pública — sem autenticação.

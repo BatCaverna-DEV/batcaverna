@@ -4,7 +4,8 @@ import painel from '../controllers/PainelController.js'
 
 router.get('/cursos',            painel.cursos)
 router.get('/demanda',           painel.demanda)
-router.get('/professor/:siape',  painel.identificar)
+router.get('/professor/:siape',    painel.identificar)
+router.get('/meus-diarios/:siape', painel.meusDiarios)
 router.post('/assumir',          painel.assumir)
 router.post('/liberar',          painel.liberar)
 
