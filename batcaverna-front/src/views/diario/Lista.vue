@@ -54,7 +54,7 @@
                 <span class="badge bg-secondary me-2" style="font-family:monospace">{{ diario.codigo }}</span>
                 <span class="fw-semibold">{{ diario.descricao }}</span>
               </td>
-              <td>{{ diario.professor.nome }}</td>
+              <td>{{ diario.professor?.nome ?? '—' }}</td>
               <td>{{ diario.turma.descricao }}</td>
               <td><code class="text-dark">{{ diario.horario }}</code></td>
               <td class="text-center">{{ diario.carga }}</td>
