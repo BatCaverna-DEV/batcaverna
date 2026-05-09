@@ -4,7 +4,8 @@ const router = express.Router()
 import auth from '../helpers/auth.js'
 import professor from '../controllers/ProfessorController.js';
 
-router.get('/', auth, professor.index);
+router.get('/',       auth, professor.index)
+router.get('/carga',  auth, professor.cargaHoraria)
 router.post('/cadastro', auth, professor.cadastrar)
 
 export default router

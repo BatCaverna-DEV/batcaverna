@@ -3,7 +3,8 @@ import { h, resolveComponent } from 'vue'
 
 //Professor
 import CadastroProfessor from '../views/professor/Cadastro.vue'
-import ListaProfessor from '../views/professor/Lista.vue'
+import ListaProfessor    from '../views/professor/Lista.vue'
+import CargaHoraria      from '../views/professor/CargaHoraria.vue'
 
 //Usuário
 import Login from '../views/usuario/Login.vue'
@@ -71,7 +72,13 @@ const router = createRouter({
                   name: 'professor.lista',
                   component: ListaProfessor,
                   meta: { title: 'Lis-Professor' },
-              }
+              },
+              {
+                  path: 'carga',
+                  name: 'professor.carga',
+                  component: CargaHoraria,
+                  meta: { title: 'Carga-Horaria' },
+              },
           ]
       },
       {

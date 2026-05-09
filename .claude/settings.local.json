@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python -c ' *)",
+      "Bash(py --version)",
+      "Bash(where node *)",
+      "Bash(node -e \"import\\('xlsx'\\).then\\(x => console.log\\('xlsx ok'\\)\\).catch\\(\\(\\) => console.log\\('xlsx not found'\\)\\)\")",
+      "Bash(npm install *)",
+      "Bash(node --input-type=module)",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "Bash(npm run *)"
+    ]
+  }
+}

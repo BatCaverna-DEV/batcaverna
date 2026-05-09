@@ -35,6 +35,7 @@
     <div class="nav-modulos">
       <RouterLink to="/admin"><i class="fa-solid fa-house"></i> Início</RouterLink>
       <RouterLink to="/professor/lista"><i class="fa-solid fa-person-chalkboard"></i> Professores</RouterLink>
+      <RouterLink to="/professor/carga"><i class="fa-solid fa-chart-bar"></i> Carga Horária</RouterLink>
       <RouterLink to="/calendario/lista"><i class="fa-solid fa-calendar-days"></i> Calendários</RouterLink>
       <RouterLink to="/curso/lista"><i class="fa-solid fa-layer-group"></i> Cursos</RouterLink>
       <RouterLink to="/turma/lista"><i class="fa-solid fa-users"></i> Turmas</RouterLink>
