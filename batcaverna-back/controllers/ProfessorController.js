@@ -1,6 +1,8 @@
 import Professor from '../models/Professor.js'
-import Usuario from '../models/Usuario.js'
-import { Op } from 'sequelize'
+import Usuario   from '../models/Usuario.js'
+import Diario    from '../models/Diario.js'
+import Turma     from '../models/Turma.js'
+import { Op }    from 'sequelize'
 
 class ProfessorController {
 
@@ -49,6 +51,54 @@ class ProfessorController {
         })
 
     }//Fim do Cadastro
+
+    /**
+     * GET /professor/carga
+     * Retorna todos os professores ativos com o total de aulas semanais
+     * e a lista de diários assumidos, ordenados pela carga decrescente.
+     */
+    cargaHoraria = async (req, res) => {
+        try {
+            const professores = await Professor.findAll({
+                where: { status: 1 },
+                order: [['nome', 'ASC']],
+            })
+
+            const diarios = await Diario.findAll({
+                where: {
+                    status:       1,
+                    professor_id: { [Op.not]: null },
+                },
+                attributes: ['id', 'codigo', 'descricao', 'aulas_semana', 'carga', 'horario', 'professor_id'],
+                include: [{ model: Turma, as: 'turma', attributes: ['codigo', 'descricao'] }],
+                order: [['descricao', 'ASC']],
+            })
+
+            // Agrupa diários por professor
+            const mapDiarios = {}
+            for (const d of diarios) {
+                if (!mapDiarios[d.professor_id]) mapDiarios[d.professor_id] = []
+                mapDiarios[d.professor_id].push(d.toJSON())
+            }
+
+            const resultado = professores.map(p => {
+                const ds = mapDiarios[p.id] ?? []
+                return {
+                    ...p.toJSON(),
+                    diarios:      ds,
+                    qtd_diarios:  ds.length,
+                    aulas_semana: ds.reduce((acc, d) => acc + (d.aulas_semana ?? 0), 0),
+                }
+            })
+
+            // Ordena: maior carga primeiro, depois alfabético
+            resultado.sort((a, b) => b.aulas_semana - a.aulas_semana || a.nome.localeCompare(b.nome))
+
+            return res.status(200).json(resultado)
+        } catch (err) {
+            return res.status(500).json({ message: err.message })
+        }
+    }
 
 }//Fim da Classe
 

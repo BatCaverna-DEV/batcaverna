@@ -326,6 +326,11 @@ async function migrar() {
 
         const { codigo, descricao, carga } = parsearComponente(componente)
 
+        // Conta quantos slots semanais válidos o horário possui (exclui sábado = dia undefined)
+        const aulas_semana = horarioStr
+            ? interpretarHorarios(horarioStr).filter(s => s.dia).length
+            : 0
+
         const [diario, criado] = await Diario.findOrCreate({
             where: {
                 codigo,
@@ -336,6 +341,7 @@ async function migrar() {
                 codigo,
                 descricao,
                 carga,
+                aulas_semana,
                 ministrada:   0,
                 status:       1,
                 horario:      horarioStr,

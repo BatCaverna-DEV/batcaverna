@@ -17,7 +17,8 @@
   })
 
   const modulos = [
-    { to: '/professor/lista',  icon: 'fa-person-chalkboard', cor: '#0d6efd', bg: '#e7f0ff', titulo: 'Professores',  descricao: 'Gerencie o corpo docente' },
+    { to: '/professor/lista',  icon: 'fa-person-chalkboard', cor: '#0d6efd', bg: '#e7f0ff', titulo: 'Professores',   descricao: 'Gerencie o corpo docente' },
+    { to: '/professor/carga',  icon: 'fa-chart-bar',         cor: '#20c997', bg: '#e6fff8', titulo: 'Carga Horária', descricao: 'Distribuição semanal por professor' },
     { to: '/calendario/lista', icon: 'fa-calendar-days',     cor: '#6f42c1', bg: '#f0ebff', titulo: 'Calendários',  descricao: 'Períodos e semestres letivos' },
     { to: '/curso/lista',      icon: 'fa-layer-group',       cor: '#198754', bg: '#e6f4ee', titulo: 'Cursos',       descricao: 'Cursos e coordenações' },
     { to: '/turma/lista',      icon: 'fa-users',             cor: '#fd7e14', bg: '#fff3e6', titulo: 'Turmas',       descricao: 'Turmas por curso e semestre' },
