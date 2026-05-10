@@ -16,10 +16,10 @@
   "main": "index.js",
   "scripts": {
     "start": "nodemon index.js",
-    "db:sync":          "node config/gerador.js",
-    "db:alter":         "node config/gerador.js --alter",
-    "db:force":         "node config/gerador.js --force",
-    "db:migrar":        "node config/migrar.js",
+    "db:sync": "node config/gerador.js",
+    "db:alter": "node config/gerador.js --alter",
+    "db:force": "node config/gerador.js --force",
+    "db:migrar": "node config/migrar.js",
     "db:migrar:limpar": "node config/migrar.js --limpar"
   },
   "dependencies": {
@@ -29,6 +29,7 @@
     "express": "^5.1.0",
     "jsonwebtoken": "^9.0.2",
     "mysql2": "^3.15.3",
+    "nodemailer": "^8.0.7",
     "sequelize": "^6.37.7"
   },
   "devDependencies": {

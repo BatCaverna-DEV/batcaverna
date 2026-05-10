@@ -9,7 +9,8 @@
       "Bash(node --input-type=module)",
       "Bash(git add *)",
       "Bash(git commit -m ' *)",
-      "Bash(npm run *)"
+      "Bash(npm run *)",
+      "Bash(git checkout *)"
     ]
   }
 }
