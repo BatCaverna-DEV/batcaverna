@@ -1,3 +1,9 @@
+/** Retorna true se o usuário logado é Supremo (categoria 1). */
+export function ehSupremo() {
+    const user = getUser()
+    return user?.categoria === 1
+}
+
 export function getUser() {
     const token = localStorage.getItem("bat_token");
 

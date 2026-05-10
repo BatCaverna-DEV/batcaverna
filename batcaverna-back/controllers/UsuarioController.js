@@ -30,8 +30,8 @@ class UsuarioController{
                 return res.status(401).json({'message': 'Usuário não encontrado!'})
             }
 
-            if(user.categoria != 2){
-                return res.status(401).json({message: 'Acesso para professor ainda não permitido!'})
+            if (user.categoria < 1) {
+                return res.status(401).json({ message: 'Usuário sem acesso ao sistema.' })
             }
 
             const isMatch = await bcrypt.compare(password, user.password)
@@ -39,7 +39,14 @@ class UsuarioController{
                 return res.status(401).json({'message': 'Senha Incorreta!'})
             }
 
-            const token = jwt.sign({id: user.id, professor_id: user.professor.id, username: user.username, nome: user.professor.nome, email: user.professor.email}, secret, {expiresIn: '1h'} )
+            const token = jwt.sign({
+                id:          user.id,
+                professor_id: user.professor.id,
+                username:    user.username,
+                nome:        user.professor.nome,
+                email:       user.professor.email,
+                categoria:   user.categoria,
+            }, secret, { expiresIn: '1h' })
 
             return res.status(200).json({'value': token})
         }catch(err){

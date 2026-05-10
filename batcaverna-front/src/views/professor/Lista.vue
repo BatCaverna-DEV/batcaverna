@@ -4,6 +4,9 @@
   import { apiFetch } from "@/services/http.js";
   import NavAdmin from "@/components/NavAdmin.vue";
   import { statusUsuario } from "@/services/format.js";
+  import { ehSupremo } from "@/services/token.js";
+
+  const supremo = ehSupremo()
 
   const router = useRouter()
   const route  = useRoute()
@@ -31,7 +34,7 @@
     <div class="pagina-header">
       <h4><i class="fa-solid fa-person-chalkboard me-2"></i>Professores</h4>
       <div class="d-flex gap-2">
-        <a class="btn btn-dark btn-sm px-3" href="/professor/cadastro">
+        <a v-if="supremo" class="btn btn-dark btn-sm px-3" href="/professor/cadastro">
           <i class="fa-solid fa-plus me-1"></i>Novo
         </a>
         <a class="btn btn-outline-secondary btn-sm" href="/admin">
@@ -70,7 +73,7 @@
                 </span>
               </td>
               <td class="text-end">
-                <div class="dropdown">
+                <div v-if="supremo" class="dropdown">
                   <button class="btn btn-sm btn-outline-secondary" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                     <i class="fa-solid fa-ellipsis-vertical"></i>
                   </button>

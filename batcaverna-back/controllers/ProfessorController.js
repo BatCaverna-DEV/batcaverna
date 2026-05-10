@@ -37,11 +37,11 @@ class ProfessorController {
         professor.status = 1
         Professor.create(professor).then(async (professor)=>{
             const usuario = {
-                username: professor.siape,
-                email: professor.email,
-                categoria: 1,
-                status: 1,
-                professor_id: professor.id
+                username:     professor.siape,
+                email:        professor.email,
+                categoria:    0,   // sem acesso; promoção feita pelo Supremo
+                status:       1,
+                professor_id: professor.id,
             }
             const u = await Usuario.create(usuario)
             return res.status(200).json(professor)

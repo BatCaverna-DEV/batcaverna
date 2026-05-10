@@ -2,7 +2,9 @@
   import NavAdmin from "@/components/NavAdmin.vue";
   import { ref, onMounted } from "vue";
   import { apiFetch } from "@/services/http.js";
-  import { getUser } from "@/services/token.js";
+  import { getUser, ehSupremo } from "@/services/token.js";
+
+  const supremo = ehSupremo()
 
   const usuario = getUser()
   const diarios = ref([])
@@ -70,8 +72,8 @@
                   </button>
                   <ul class="dropdown-menu dropdown-menu-end shadow-sm">
                     <li><a class="dropdown-item" href="#"><i class="fa-solid fa-pen me-2 text-secondary"></i>Editar</a></li>
-                    <li><hr class="dropdown-divider my-1"></li>
-                    <li><a class="dropdown-item text-danger" href="#"><i class="fa-solid fa-trash me-2"></i>Excluir</a></li>
+                    <li v-if="supremo"><hr class="dropdown-divider my-1"></li>
+                    <li v-if="supremo"><a class="dropdown-item text-danger" href="#"><i class="fa-solid fa-trash me-2"></i>Excluir</a></li>
                   </ul>
                 </div>
               </td>
