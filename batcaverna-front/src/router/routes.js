@@ -29,6 +29,9 @@ import Admin from '../views/admin/Admin.vue'
 import NotFound from "@/views/admin/NotFound.vue";
 import Painel from '@/views/admin/Painel.vue'
 
+//Painel público
+import Demanda from '@/views/painel/Demanda.vue'
+
 
 
 const RouterViewOnly = {
@@ -146,6 +149,12 @@ const router = createRouter({
                   meta: { title: 'Cad-Diario' },
               }
           ]
+      },
+      {
+          path: '/demanda',
+          name: 'demanda',
+          component: Demanda,
+          // sem requiresAuth — tela pública
       },
       {
           path: '/login',
