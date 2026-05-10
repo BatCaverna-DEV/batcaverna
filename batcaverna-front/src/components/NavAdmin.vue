@@ -25,7 +25,7 @@
           </li>
           <li><hr class="dropdown-divider my-1"></li>
           <li><a class="dropdown-item" href="#"><i class="fa-solid fa-user me-2 text-secondary"></i>Meus Dados</a></li>
-          <li><a class="dropdown-item" href="#"><i class="fa-solid fa-key me-2 text-secondary"></i>Alterar Senha</a></li>
+          <li><RouterLink class="dropdown-item" to="/usuario/senha"><i class="fa-solid fa-key me-2 text-secondary"></i>Alterar Senha</RouterLink></li>
           <li><hr class="dropdown-divider my-1"></li>
           <li><a class="dropdown-item text-danger" href="/logout"><i class="fa-solid fa-right-from-bracket me-2"></i>Sair</a></li>
         </ul>

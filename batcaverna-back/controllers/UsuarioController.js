@@ -47,13 +47,46 @@ class UsuarioController{
 
     }//Fim do Login
 
-    gerar = async (req, res) => {
+    /**
+     * PUT /usuario/senha
+     * Body: { senhaAtual, novaSenha }
+     * Altera a senha do usuário autenticado (req.userId vem do middleware auth).
+     */
+    alterarSenha = async (req, res) => {
+        try {
+            const { senhaAtual, novaSenha } = req.body
 
+            if (!senhaAtual || !novaSenha) {
+                return res.status(400).json({ message: 'Preencha todos os campos.' })
+            }
+            if (novaSenha.length < 6) {
+                return res.status(400).json({ message: 'A nova senha deve ter no mínimo 6 caracteres.' })
+            }
+
+            const user = await Usuario.findByPk(req.userId)
+            if (!user) {
+                return res.status(404).json({ message: 'Usuário não encontrado.' })
+            }
+
+            const senhaCorreta = await bcrypt.compare(senhaAtual, user.password)
+            if (!senhaCorreta) {
+                return res.status(401).json({ message: 'Senha atual incorreta.' })
+            }
+
+            const hash = await bcrypt.hash(novaSenha, 10)
+            await user.update({ password: hash })
+
+            return res.status(200).json({ message: 'Senha alterada com sucesso!' })
+        } catch (err) {
+            return res.status(500).json({ message: err.message })
+        }
+    }
+
+    gerar = async (req, res) => {
         const salt = await bcrypt.genSalt(10)
         const senha = req.params.senha
         const password = await bcrypt.hash(senha, salt)
         res.status(200).send({'senha': password})
-
     }
 
 }//Fim da Classe

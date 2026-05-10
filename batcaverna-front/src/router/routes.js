@@ -7,7 +7,8 @@ import ListaProfessor    from '../views/professor/Lista.vue'
 import CargaHoraria      from '../views/professor/CargaHoraria.vue'
 
 //Usuário
-import Login from '../views/usuario/Login.vue'
+import Login         from '../views/usuario/Login.vue'
+import AlterarSenha  from '../views/usuario/AlterarSenha.vue'
 
 //Calendário
 import ListaCalendario from '@/views/calendario/Lista.vue'
@@ -168,6 +169,12 @@ const router = createRouter({
           name: 'login',
           component: Login,
           meta: { guestOnly: true },
+      },
+      {
+          path: '/usuario/senha',
+          name: 'usuario.senha',
+          component: AlterarSenha,
+          meta: { requiresAuth: true },
       },
       {
           path: '/logout',
