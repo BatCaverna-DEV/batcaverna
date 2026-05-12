@@ -51,9 +51,9 @@
 
     <div class="pagina-header">
       <h4><i class="fa-solid fa-book me-2"></i>Novo Diário</h4>
-      <a class="btn btn-outline-secondary btn-sm" href="/diario/lista">
+      <RouterLink class="btn btn-outline-secondary btn-sm" to="/diario/lista">
         <i class="fa-solid fa-arrow-left me-1"></i>Voltar
-      </a>
+      </RouterLink>
     </div>
 
     <div class="pagina-body">
@@ -104,7 +104,7 @@
         </div>
 
         <div class="form-footer">
-          <a class="btn btn-outline-secondary" href="/diario/lista">Cancelar</a>
+          <RouterLink class="btn btn-outline-secondary" to="/diario/lista">Cancelar</RouterLink>
           <button type="submit" class="btn btn-dark px-4">
             <i class="fa-solid fa-floppy-disk me-2"></i>Salvar
           </button>

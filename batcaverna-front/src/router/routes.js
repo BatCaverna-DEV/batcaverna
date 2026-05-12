@@ -45,17 +45,17 @@ const RouterViewOnly = {
 }
 
 const router = createRouter({
-  history: createWebHistory(),
+  history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
       {
           path: '/',
           name: 'painel',
-          component: () => Painel,
+          component: Painel,
       },
       {
           path: '/admin',
           name: 'admin',
-          component: () => Admin,
+          component: Admin,
           meta: { requiresAuth: true },
       },
       //GRUPO DE ROTAS: PROFESSOR

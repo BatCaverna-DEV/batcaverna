@@ -33,9 +33,9 @@
 
     <div class="pagina-header">
       <h4><i class="fa-solid fa-calendar-days me-2"></i>Novo Calendário</h4>
-      <a class="btn btn-outline-secondary btn-sm" href="/calendario/lista">
+      <RouterLink class="btn btn-outline-secondary btn-sm" to="/calendario/lista">
         <i class="fa-solid fa-arrow-left me-1"></i>Voltar
-      </a>
+      </RouterLink>
     </div>
 
     <div class="pagina-body">
@@ -69,7 +69,7 @@
         </div>
 
         <div class="form-footer">
-          <a class="btn btn-outline-secondary" href="/calendario/lista">Cancelar</a>
+          <RouterLink class="btn btn-outline-secondary" to="/calendario/lista">Cancelar</RouterLink>
           <button type="submit" class="btn btn-dark px-4">
             <i class="fa-solid fa-floppy-disk me-2"></i>Salvar
           </button>

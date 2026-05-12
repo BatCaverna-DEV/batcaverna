@@ -72,7 +72,7 @@
         </button>
 
         <div class="text-center">
-          <a href="/usuario/recuperar" class="text-muted" style="font-size:.82rem">Esqueci a senha / Primeiro acesso</a>
+          <RouterLink to="/usuario/recuperar" class="text-muted" style="font-size:.82rem">Esqueci a senha / Primeiro acesso</RouterLink>
         </div>
       </form>
 

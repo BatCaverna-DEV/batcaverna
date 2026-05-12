@@ -25,12 +25,12 @@
     <div class="pagina-header">
       <h4><i class="fa-solid fa-users me-2"></i>Turmas</h4>
       <div class="d-flex gap-2">
-        <a class="btn btn-dark btn-sm px-3" href="/turma/cadastro">
+        <RouterLink class="btn btn-dark btn-sm px-3" to="/turma/cadastro">
           <i class="fa-solid fa-plus me-1"></i>Nova
-        </a>
-        <a class="btn btn-outline-secondary btn-sm" href="/admin">
+        </RouterLink>
+        <RouterLink class="btn btn-outline-secondary btn-sm" to="/admin">
           <i class="fa-solid fa-arrow-left me-1"></i>Voltar
-        </a>
+        </RouterLink>
       </div>
     </div>
 

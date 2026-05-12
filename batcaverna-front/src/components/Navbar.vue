@@ -1,4 +1,5 @@
 <script setup>
+import { RouterLink } from 'vue-router'
 </script>
 
 <template>
@@ -8,12 +9,12 @@
       <span class="fw-bold text-white" style="letter-spacing:.06em;font-size:.95rem">BATCAVERNA</span>
     </div>
     <div class="d-flex align-items-center gap-2">
-      <a class="btn btn-outline-light btn-sm" href="/demanda">
+      <RouterLink class="btn btn-outline-light btn-sm" to="/demanda">
         <i class="fa-solid fa-list-check me-2"></i>Demanda
-      </a>
-      <a class="btn btn-outline-light btn-sm px-3" href="/login">
+      </RouterLink>
+      <RouterLink class="btn btn-outline-light btn-sm px-3" to="/login">
         <i class="fa-solid fa-right-to-bracket me-2"></i>Entrar
-      </a>
+      </RouterLink>
     </div>
   </nav>
 </template>

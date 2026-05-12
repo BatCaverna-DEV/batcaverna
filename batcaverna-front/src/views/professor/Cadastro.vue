@@ -33,9 +33,9 @@
 
     <div class="pagina-header">
       <h4><i class="fa-solid fa-person-chalkboard me-2"></i>Novo Professor</h4>
-      <a class="btn btn-outline-secondary btn-sm" href="/professor/lista">
+      <RouterLink class="btn btn-outline-secondary btn-sm" to="/professor/lista">
         <i class="fa-solid fa-arrow-left me-1"></i>Voltar
-      </a>
+      </RouterLink>
     </div>
 
     <div class="pagina-body">
@@ -61,7 +61,7 @@
         </div>
 
         <div class="form-footer">
-          <a class="btn btn-outline-secondary" href="/professor/lista">Cancelar</a>
+          <RouterLink class="btn btn-outline-secondary" to="/professor/lista">Cancelar</RouterLink>
           <button type="submit" class="btn btn-dark px-4">
             <i class="fa-solid fa-floppy-disk me-2"></i>Salvar
           </button>

@@ -60,9 +60,9 @@ async function alterar() {
 
         <div class="pagina-header">
             <h4><i class="fa-solid fa-key me-2"></i>Alterar Senha</h4>
-            <a class="btn btn-outline-secondary btn-sm" href="/admin">
+            <RouterLink class="btn btn-outline-secondary btn-sm" to="/admin">
                 <i class="fa-solid fa-arrow-left me-1"></i>Voltar
-            </a>
+            </RouterLink>
         </div>
 
         <div class="pagina-body">

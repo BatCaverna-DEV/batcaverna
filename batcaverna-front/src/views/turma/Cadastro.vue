@@ -53,9 +53,9 @@
 
     <div class="pagina-header">
       <h4><i class="fa-solid fa-users me-2"></i>Nova Turma</h4>
-      <a class="btn btn-outline-secondary btn-sm" href="/turma/lista">
+      <RouterLink class="btn btn-outline-secondary btn-sm" to="/turma/lista">
         <i class="fa-solid fa-arrow-left me-1"></i>Voltar
-      </a>
+      </RouterLink>
     </div>
 
     <div class="pagina-body">
@@ -91,7 +91,7 @@
         </div>
 
         <div class="form-footer">
-          <a class="btn btn-outline-secondary" href="/turma/lista">Cancelar</a>
+          <RouterLink class="btn btn-outline-secondary" to="/turma/lista">Cancelar</RouterLink>
           <button type="submit" class="btn btn-dark px-4">
             <i class="fa-solid fa-floppy-disk me-2"></i>Salvar
           </button>

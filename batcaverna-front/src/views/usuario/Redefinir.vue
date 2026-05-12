@@ -73,9 +73,9 @@ async function redefinir() {
             <div v-if="!linkValido" class="text-center">
                 <div class="mb-3" style="font-size:2.5rem">⚠️</div>
                 <p class="text-danger" style="font-size:.9rem">{{ erro }}</p>
-                <a href="/usuario/recuperar" class="btn btn-dark w-100 mt-2">
+                <RouterLink to="/usuario/recuperar" class="btn btn-dark w-100 mt-2">
                     <i class="fa-solid fa-rotate-left me-2"></i>Solicitar novo link
-                </a>
+                </RouterLink>
             </div>
 
             <!-- Sucesso -->

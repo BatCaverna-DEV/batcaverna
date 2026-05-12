@@ -46,9 +46,9 @@ async function solicitar() {
                     Se o SIAPE estiver cadastrado, você receberá um e-mail com o link para redefinir sua senha.
                 </p>
                 <p class="text-muted" style="font-size:.82rem">Verifique também a caixa de spam.</p>
-                <a href="/login" class="btn btn-dark w-100 mt-2">
+                <RouterLink to="/login" class="btn btn-dark w-100 mt-2">
                     <i class="fa-solid fa-arrow-left me-2"></i>Voltar ao login
-                </a>
+                </RouterLink>
             </div>
 
             <!-- Formulário -->
@@ -78,9 +78,9 @@ async function solicitar() {
                     </button>
 
                     <div class="text-center">
-                        <a href="/login" class="text-muted" style="font-size:.82rem">
+                        <RouterLink to="/login" class="text-muted" style="font-size:.82rem">
                             <i class="fa-solid fa-arrow-left me-1"></i>Voltar ao login
-                        </a>
+                        </RouterLink>
                     </div>
                 </form>
             </template>

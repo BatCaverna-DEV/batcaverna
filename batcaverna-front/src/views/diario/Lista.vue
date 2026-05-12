@@ -25,12 +25,12 @@
     <div class="pagina-header">
       <h4><i class="fa-solid fa-book me-2"></i>Diários</h4>
       <div class="d-flex gap-2">
-        <a class="btn btn-dark btn-sm px-3" href="/diario/cadastro">
+        <RouterLink class="btn btn-dark btn-sm px-3" to="/diario/cadastro">
           <i class="fa-solid fa-plus me-1"></i>Novo
-        </a>
-        <a class="btn btn-outline-secondary btn-sm" href="/admin">
+        </RouterLink>
+        <RouterLink class="btn btn-outline-secondary btn-sm" to="/admin">
           <i class="fa-solid fa-arrow-left me-1"></i>Voltar
-        </a>
+        </RouterLink>
       </div>
     </div>
 
