@@ -4,6 +4,9 @@
   import { useRouter } from 'vue-router'
   import { apiFetch } from "@/services/http.js";
   import { statusCalendario } from "@/services/format.js";
+  import { ehSupremo } from "@/services/token.js";
+
+  const supremo = ehSupremo()
 
   const router = useRouter()
   const calendarios = ref([])
@@ -27,7 +30,7 @@
     <div class="pagina-header">
       <h4><i class="fa-solid fa-calendar-days me-2"></i>Calendários</h4>
       <div class="d-flex gap-2">
-        <RouterLink class="btn btn-dark btn-sm px-3" to="/calendario/cadastro">
+        <RouterLink v-if="supremo" class="btn btn-dark btn-sm px-3" to="/calendario/cadastro">
           <i class="fa-solid fa-plus me-1"></i>Novo
         </RouterLink>
         <RouterLink class="btn btn-outline-secondary btn-sm" to="/admin">
@@ -64,7 +67,7 @@
                 </span>
               </td>
               <td class="text-end">
-                <div class="dropdown">
+                <div v-if="supremo" class="dropdown">
                   <button class="btn btn-sm btn-outline-secondary" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                     <i class="fa-solid fa-ellipsis-vertical"></i>
                   </button>

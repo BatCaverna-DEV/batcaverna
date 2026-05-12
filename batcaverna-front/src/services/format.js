@@ -6,10 +6,8 @@ export function statusCalendario(status){
     }
 }
 
-export function statusUsuario(status){
-    if(status === 1){
-        return 'Professor'
-    }else if(status === 2){
-        return 'Coordenador'
-    }
+export function statusUsuario(categoria){
+    if(categoria === 1) return 'Supremo'
+    if(categoria === 2) return 'Coordenador'
+    return 'Sem acesso'
 }

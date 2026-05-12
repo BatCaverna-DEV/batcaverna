@@ -2,11 +2,12 @@
   import Perfil from "../../components/Perfil.vue";
   import { RouterLink } from "vue-router";
   import NavAdmin from "@/components/NavAdmin.vue";
-  import { getUser } from "@/services/token.js";
+  import { getUser, ehSupremo } from "@/services/token.js";
   import { apiFetch } from "@/services/http.js";
   import { onMounted, ref } from "vue";
 
   const usuario = getUser()
+  const supremo = ehSupremo()
   const curso = ref('')
 
   onMounted(async () => {
@@ -43,9 +44,14 @@
           </h6>
           <h4 class="fw-bold mb-0" style="color:#212529">
             Bem-vindo, {{ usuario.nome?.split(' ')[0] }}
+            <span class="badge ms-2 align-middle"
+                  :class="supremo ? 'bg-dark' : 'bg-secondary'"
+                  style="font-size:.6rem;letter-spacing:.06em;vertical-align:middle">
+              {{ supremo ? 'Supremo' : 'Coordenador' }}
+            </span>
           </h4>
           <p class="text-muted mb-0" style="font-size:.85rem" v-if="curso">
-            Coordenador — {{ curso.descricao }}
+            {{ supremo ? 'Chefe de Departamento' : 'Coordenador' }} — {{ curso.descricao }}
           </p>
         </div>
 
