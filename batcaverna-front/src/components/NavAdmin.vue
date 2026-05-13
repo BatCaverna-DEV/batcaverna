@@ -40,6 +40,7 @@
       <RouterLink to="/curso/lista"><i class="fa-solid fa-layer-group"></i> Cursos</RouterLink>
       <RouterLink to="/turma/lista"><i class="fa-solid fa-users"></i> Turmas</RouterLink>
       <RouterLink to="/diario/lista"><i class="fa-solid fa-book"></i> Diários</RouterLink>
+      <RouterLink to="/plantao/fila"><i class="fa-solid fa-clipboard-list"></i> Plantões</RouterLink>
     </div>
   </div>
 </template>

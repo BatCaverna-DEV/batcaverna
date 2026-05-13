@@ -24,6 +24,7 @@
     { to: '/curso/lista',      icon: 'fa-layer-group',       cor: '#198754', bg: '#e6f4ee', titulo: 'Cursos',       descricao: 'Cursos e coordenações' },
     { to: '/turma/lista',      icon: 'fa-users',             cor: '#fd7e14', bg: '#fff3e6', titulo: 'Turmas',       descricao: 'Turmas por curso e semestre' },
     { to: '/diario/lista',     icon: 'fa-book',              cor: '#dc3545', bg: '#fdecea', titulo: 'Diários',      descricao: 'Registro de aulas e horários' },
+    { to: '/plantao/fila',    icon: 'fa-clipboard-list',   cor: '#e67e22', bg: '#fff3e0', titulo: 'Fila Plantões', descricao: 'Fila semestral de plantões docentes' },
   ]
 </script>
 

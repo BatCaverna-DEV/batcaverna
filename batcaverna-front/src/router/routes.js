@@ -36,6 +36,9 @@ import Painel from '@/views/admin/Painel.vue'
 //Painel público
 import Demanda from '@/views/painel/Demanda.vue'
 
+//Plantão
+import FilaPlantao from '@/views/plantao/Fila.vue'
+
 
 
 const RouterViewOnly = {
@@ -158,6 +161,20 @@ const router = createRouter({
                   component: CadastroDiario,
                   meta: { title: 'Cad-Diario' },
               }
+          ]
+      },
+      //GRUPO DE ROTAS: PLANTÃO
+      {
+          path: '/plantao',
+          component: RouterViewOnly,
+          meta: { group: 'plantao', requiresAuth: true },
+          children: [
+              {
+                  path: 'fila',
+                  name: 'plantao.fila',
+                  component: FilaPlantao,
+                  meta: { title: 'Fila-Plantoes' },
+              },
           ]
       },
       {
