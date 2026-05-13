@@ -100,6 +100,34 @@ class ProfessorController {
         }
     }
 
+    promover = async (req, res) => {
+        try {
+            const { id } = req.params
+
+            const professor = await Professor.findByPk(id, {
+                include: [{ model: Usuario, as: 'usuario' }]
+            })
+            if (!professor) return res.status(404).json({ message: 'Professor não encontrado' })
+
+            const usuario = professor.usuario
+            if (!usuario) return res.status(404).json({ message: 'Usuário não encontrado' })
+
+            if (usuario.categoria === 1)
+                return res.status(403).json({ message: 'Não é possível alterar o papel do Supremo' })
+
+            const novaCategoria = usuario.categoria === 2 ? 0 : 2
+            await usuario.update({ categoria: novaCategoria })
+
+            const mensagem = novaCategoria === 2
+                ? 'Professor promovido a Coordenador com sucesso'
+                : 'Coordenador rebaixado a Professor com sucesso'
+
+            return res.status(200).json({ message: mensagem, categoria: novaCategoria })
+        } catch (err) {
+            return res.status(500).json({ message: err.message })
+        }
+    }
+
 }//Fim da Classe
 
 export default new ProfessorController()

@@ -10,7 +10,17 @@
       "Bash(git add *)",
       "Bash(git commit -m ' *)",
       "Bash(npm run *)",
-      "Bash(git checkout *)"
+      "Bash(git checkout *)",
+      "Bash(ls \"d:/.ssh/\")",
+      "Bash(ssh -i \"d:/.ssh/hostinger\" -o StrictHostKeyChecking=no root@69.62.97.146 \"echo 'Conectado com sucesso!' && uname -a && uptime\")",
+      "Bash(ssh -i \"d:/.ssh/hostinger\" -o StrictHostKeyChecking=no -v root@69.62.97.146 \"echo ok\")",
+      "Bash(Get-ChildItem -Path \"D:\\\\Github\\\\batcaverna\" -Force)",
+      "Bash(Select-Object Name, Mode)",
+      "Bash(Format-Table -AutoSize)",
+      "Bash(Get-ChildItem -Path \"D:\\\\Github\\\\batcaverna\" -Recurse -Directory)",
+      "Bash(Select-Object -First 20)",
+      "Bash(mysql -u root --password=\"\" batcaverna -e \"SELECT u.id, u.username, u.categoria, u.status, p.nome, p.siape FROM usuario u JOIN professor p ON p.id = u.professor_id ORDER BY u.categoria DESC, p.nome;\")",
+      "PowerShell(mysql -u root --password=\"\" batcaverna -e \"SELECT u.id, u.username, u.categoria, u.status, p.nome, p.siape FROM usuario u JOIN professor p ON p.id = u.professor_id ORDER BY u.categoria DESC, p.nome;\")"
     ]
   }
 }

@@ -11,20 +11,50 @@
   const router = useRouter()
   const route  = useRoute()
 
-  const professores = ref([])
-  const cadastrou   = ref(false)
+  const professores  = ref([])
+  const cadastrou    = ref(false)
+  const mensagem     = ref('')
+  const carregando   = ref(null) // id do professor em operação
 
-  onMounted(async () => {
-    let resposta = await apiFetch('/professor')
+  const carregar = async () => {
+    const resposta = await apiFetch('/professor')
     if (resposta.ok) {
       professores.value = await resposta.json()
-      if (route.query.sucesso) cadastrou.value = true
     } else {
-      let msg = await resposta.json()
+      const msg = await resposta.json()
       alert('ERRO ' + resposta.status + ': ' + msg.message)
       router.push('/admin')
     }
+  }
+
+  onMounted(async () => {
+    await carregar()
+    if (route.query.sucesso) cadastrou.value = true
   })
+
+  const promover = async (professor) => {
+    const ehCoordenador = professor.usuario?.categoria === 2
+    const acao = ehCoordenador ? 'rebaixar' : 'promover'
+    const descricao = ehCoordenador
+      ? `rebaixar ${professor.nome} de Coordenador para Sem Acesso`
+      : `promover ${professor.nome} a Coordenador`
+
+    if (!confirm(`Deseja ${descricao}?`)) return
+
+    carregando.value = professor.id
+    mensagem.value = ''
+
+    const resposta = await apiFetch(`/professor/${professor.id}/promover`, { method: 'PUT' })
+    const dados = await resposta.json()
+    carregando.value = null
+
+    if (resposta.ok) {
+      mensagem.value = dados.message
+      await carregar()
+    } else {
+      alert('ERRO ' + resposta.status + ': ' + dados.message)
+    }
+  }
 </script>
 
 <template>
@@ -48,6 +78,11 @@
       <div v-if="cadastrou" class="alert alert-success alert-dismissible fade show py-2" role="alert">
         <i class="fa-solid fa-circle-check me-2"></i>Professor cadastrado com sucesso!
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+
+      <div v-if="mensagem" class="alert alert-success alert-dismissible fade show py-2" role="alert">
+        <i class="fa-solid fa-circle-check me-2"></i>{{ mensagem }}
+        <button type="button" class="btn-close" @click="mensagem = ''" aria-label="Close"></button>
       </div>
 
       <div class="table-responsive">
@@ -78,7 +113,16 @@
                     <i class="fa-solid fa-ellipsis-vertical"></i>
                   </button>
                   <ul class="dropdown-menu dropdown-menu-end shadow-sm">
-                    <li><a class="dropdown-item" href="#"><i class="fa-solid fa-arrow-up me-2 text-primary"></i>Promover</a></li>
+                    <li v-if="professor.usuario?.categoria !== 1">
+                      <button class="dropdown-item" :disabled="carregando === professor.id" @click="promover(professor)">
+                        <span v-if="carregando === professor.id" class="spinner-border spinner-border-sm me-2"></span>
+                        <template v-else>
+                          <i v-if="professor.usuario?.categoria === 2" class="fa-solid fa-arrow-down me-2 text-warning"></i>
+                          <i v-else class="fa-solid fa-arrow-up me-2 text-primary"></i>
+                        </template>
+                        {{ professor.usuario?.categoria === 2 ? 'Rebaixar' : 'Promover' }}
+                      </button>
+                    </li>
                     <li><a class="dropdown-item" href="#"><i class="fa-solid fa-pen me-2 text-secondary"></i>Editar</a></li>
                     <li><hr class="dropdown-divider my-1"></li>
                     <li><a class="dropdown-item text-danger" href="#"><i class="fa-solid fa-trash me-2"></i>Excluir</a></li>

@@ -171,6 +171,7 @@ class UsuarioController{
             }
 
             const user = await Usuario.findByPk(id)
+            console.log(user);
             if (!user || !user.codigo) {
                 return res.status(400).json({ message: 'Link inválido ou expirado.' })
             }

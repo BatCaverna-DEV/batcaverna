@@ -188,7 +188,6 @@ const router = createRouter({
           path: '/usuario/redefinir',
           name: 'usuario.redefinir',
           component: Redefinir,
-          meta: { guestOnly: true },
       },
       {
           path: '/logout',
