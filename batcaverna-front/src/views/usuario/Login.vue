@@ -1,5 +1,5 @@
 <script setup>
-  import { ref } from 'vue'
+  import { ref, onMounted } from 'vue'
   import { useRouter, useRoute } from 'vue-router'
   import { apiFetch } from "@/services/http.js"
   import { setToken } from '@/services/auth.js'
@@ -7,18 +7,16 @@
   const router = useRouter()
   const route  = useRoute()
 
-  const username = ref('')
-  const password = ref('')
-  const loading  = ref(false)
-  const erro     = ref('')
+  const loading = ref(false)
+  const erro    = ref('')
 
-  async function login() {
+  async function handleGoogleCredential(response) {
     erro.value = ''
     loading.value = true
     try {
-      const resposta = await apiFetch('/usuario/login', {
+      const resposta = await apiFetch('/usuario/login-google', {
         method: 'POST',
-        body: { username: username.value, password: password.value },
+        body: { credential: response.credential },
       })
       const token = await resposta.json()
       if (resposta.ok) {
@@ -28,11 +26,26 @@
         erro.value = token.message
       }
     } catch (err) {
-      erro.value = err.message || 'Falha no login!'
+      erro.value = err.message || 'Falha na autenticação com Google.'
     } finally {
       loading.value = false
     }
   }
+
+  onMounted(() => {
+    const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID
+    if (!clientId || !window.google) return
+
+    window.google.accounts.id.initialize({
+      client_id: clientId,
+      callback:  handleGoogleCredential,
+    })
+
+    window.google.accounts.id.renderButton(
+      document.getElementById('google-btn'),
+      { theme: 'outline', size: 'large', width: 336, locale: 'pt-BR' }
+    )
+  })
 </script>
 
 <template>
@@ -45,36 +58,19 @@
 
       <h5>Acesso ao Sistema</h5>
 
+      <p class="instrucao">
+        Use seu e-mail institucional <strong>@ifma.edu.br</strong> para entrar.
+      </p>
+
       <div v-if="erro" class="alert alert-danger py-2 mb-3" role="alert">
         <i class="fa-solid fa-circle-exclamation me-2"></i>{{ erro }}
       </div>
 
-      <form @submit.prevent="login">
-        <div class="mb-3">
-          <label for="username" class="form-label">Usuário</label>
-          <input v-model="username" type="text" id="username" name="username" required
-                 class="form-control" placeholder="Digite seu SIAPE" autocomplete="username">
-        </div>
+      <div v-if="loading" class="text-center my-3 text-muted">
+        <span class="spinner-border spinner-border-sm me-2" role="status"></span>Entrando…
+      </div>
 
-        <div class="mb-4">
-          <label for="password" class="form-label">Senha</label>
-          <input v-model="password" type="password" id="password" name="password" required
-                 class="form-control" placeholder="••••••••" autocomplete="current-password">
-        </div>
-
-        <button :disabled="loading" class="btn btn-dark w-100 mb-3">
-          <span v-if="loading">
-            <span class="spinner-border spinner-border-sm me-2" role="status"></span>Entrando…
-          </span>
-          <span v-else>
-            <i class="fa-solid fa-right-to-bracket me-2"></i>Entrar
-          </span>
-        </button>
-
-        <div class="text-center">
-          <RouterLink to="/usuario/recuperar" class="text-muted" style="font-size:.82rem">Esqueci a senha / Primeiro acesso</RouterLink>
-        </div>
-      </form>
+      <div id="google-btn" class="d-flex justify-content-center mb-2"></div>
 
       <div class="text-center mt-3">
         <RouterLink to="/" class="text-muted d-inline-flex align-items-center gap-1" style="font-size:.82rem">
@@ -85,3 +81,12 @@
     </div>
   </div>
 </template>
+
+<style scoped>
+.instrucao {
+  text-align: center;
+  font-size: .82rem;
+  color: #6c757d;
+  margin-bottom: 1.5rem;
+}
+</style>

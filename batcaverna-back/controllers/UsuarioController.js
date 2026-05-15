@@ -4,6 +4,7 @@ import bcrypt     from 'bcrypt'
 import jwt        from 'jsonwebtoken'
 import dotenv     from 'dotenv'
 import mailer     from '../config/mailer.js'
+import { OAuth2Client } from 'google-auth-library'
 dotenv.config()
 
 const secret = process.env.JWT_SECRET
@@ -185,6 +186,64 @@ class UsuarioController{
             return res.status(200).json({ message: 'Senha redefinida com sucesso!' })
         } catch (err) {
             return res.status(500).json({ message: err.message })
+        }
+    }
+
+    loginGoogle = async (req, res) => {
+        const { credential } = req.body
+
+        if (!credential) {
+            return res.status(400).json({ message: 'Token do Google não informado.' })
+        }
+
+        try {
+            const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID)
+
+            const ticket = await client.verifyIdToken({
+                idToken:  credential,
+                audience: process.env.GOOGLE_CLIENT_ID,
+            })
+
+            const payload = ticket.getPayload()
+            const email       = payload.email
+            const ehIfma      = email.endsWith('@ifma.edu.br')
+            const ehGmail     = email.endsWith('@gmail.com')
+
+            if (!ehIfma && !ehGmail) {
+                return res.status(401).json({ message: 'Use o e-mail institucional (@ifma.edu.br).' })
+            }
+
+            const professor = await Professor.findOne({ where: { email } })
+            if (!professor) {
+                return res.status(401).json({ message: 'E-mail não cadastrado no sistema.' })
+            }
+
+            const user = await Usuario.findOne({
+                where:   { professor_id: professor.id },
+                include: { model: Professor, as: 'professor' },
+            })
+
+            if (!user || user.categoria < 1) {
+                return res.status(401).json({ message: 'Sem acesso ao sistema.' })
+            }
+
+            // Gmail só é permitido para o Supremo (categoria 1)
+            if (ehGmail && user.categoria !== 1) {
+                return res.status(401).json({ message: 'Acesso via Gmail restrito ao Supremo.' })
+            }
+
+            const token = jwt.sign({
+                id:           user.id,
+                professor_id: professor.id,
+                username:     user.username,
+                nome:         professor.nome,
+                email:        professor.email,
+                categoria:    user.categoria,
+            }, secret, { expiresIn: '1h' })
+
+            return res.status(200).json({ value: token })
+        } catch (err) {
+            return res.status(401).json({ message: 'Falha na autenticação com Google.' })
         }
     }
 
