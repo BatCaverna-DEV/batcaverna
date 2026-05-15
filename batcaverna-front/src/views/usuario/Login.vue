@@ -76,6 +76,12 @@
         </div>
       </form>
 
+      <div class="text-center mt-3">
+        <RouterLink to="/" class="text-muted d-inline-flex align-items-center gap-1" style="font-size:.82rem">
+          <i class="fa-solid fa-arrow-left" style="font-size:.72rem"></i>Voltar para a página inicial
+        </RouterLink>
+      </div>
+
     </div>
   </div>
 </template>

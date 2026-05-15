@@ -33,6 +33,9 @@ import Admin from '../views/admin/Admin.vue'
 import NotFound from "@/views/admin/NotFound.vue";
 import Painel from '@/views/admin/Painel.vue'
 
+//Homepage
+import Home from '@/views/Home.vue'
+
 //Painel público
 import Demanda from '@/views/painel/Demanda.vue'
 
@@ -49,8 +52,8 @@ const router = createRouter({
   routes: [
       {
           path: '/',
-          name: 'painel',
-          component: Painel,
+          name: 'home',
+          component: Home,
       },
       {
           path: '/admin',

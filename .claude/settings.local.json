@@ -22,7 +22,8 @@
       "Bash(mysql -u root --password=\"\" batcaverna -e \"SELECT u.id, u.username, u.categoria, u.status, p.nome, p.siape FROM usuario u JOIN professor p ON p.id = u.professor_id ORDER BY u.categoria DESC, p.nome;\")",
       "PowerShell(mysql -u root --password=\"\" batcaverna -e \"SELECT u.id, u.username, u.categoria, u.status, p.nome, p.siape FROM usuario u JOIN professor p ON p.id = u.professor_id ORDER BY u.categoria DESC, p.nome;\")",
       "Bash(mysql -u root -e \"USE batcaverna; SHOW TABLES;\")",
-      "Bash(Select-Object Name, PSIsContainer)"
+      "Bash(Select-Object Name, PSIsContainer)",
+      "Bash(Select-Object -Property Mode, Name)"
     ]
   }
 }
