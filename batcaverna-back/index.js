@@ -33,4 +33,7 @@ app.use('/diario', diario);
 import painel from './routes/painel.js';
 app.use('/painel', painel);
 
+import fila from './routes/fila.js';
+app.use('/fila', fila);
+
 app.listen(port, () => {console.log(`Servidor rodando em http://localhost:${port}`)})

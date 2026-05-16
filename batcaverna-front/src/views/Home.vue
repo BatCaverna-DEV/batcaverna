@@ -21,11 +21,11 @@ import Navbar from '@/components/Navbar.vue'
       </p>
       <div class="hero__actions">
         <RouterLink to="/demanda" class="btn btn-light btn-lg px-4">
-          <i class="fa-solid fa-list-check me-2"></i>Ver Demanda
+          <i class="fa-solid fa-list-check me-2"></i>Ver Demanda 2026.2
         </RouterLink>
-        <RouterLink to="/login" class="btn btn-outline-light btn-lg px-4">
-          <i class="fa-solid fa-right-to-bracket me-2"></i>Entrar no Sistema
-        </RouterLink>
+<!--        <RouterLink to="/login" class="btn btn-outline-light btn-lg px-4">-->
+<!--          <i class="fa-solid fa-right-to-bracket me-2"></i>Entrar no Sistema-->
+<!--        </RouterLink>-->
       </div>
     </div>
   </section>
@@ -54,13 +54,16 @@ import Navbar from '@/components/Navbar.vue'
       <div class="col-12 col-sm-6 col-lg-4">
         <div class="feat-card">
           <div class="feat-card__icone" style="background:#343a40">
-            <i class="fa-solid fa-calendar-week"></i>
+            <i class="fa-solid fa-list-ol"></i>
           </div>
-          <h5 class="feat-card__titulo">Fila de Segunda e Sexta</h5>
+          <h5 class="feat-card__titulo">Fila de Horários Ruins</h5>
           <p class="feat-card__desc">
-            Controle organizado das filas dos dias de segunda e sexta-feira,
-            garantindo equidade na distribuição de atividades entre os docentes.
+            Controle organizado do rodízio dos horários indesejados — Segunda 07h,
+            Sexta 18h, Sexta Noite e Três Noites — garantindo equidade entre os docentes.
           </p>
+          <RouterLink to="/fila" class="feat-card__link">
+            Ver fila <i class="fa-solid fa-arrow-right ms-1"></i>
+          </RouterLink>
         </div>
       </div>
 

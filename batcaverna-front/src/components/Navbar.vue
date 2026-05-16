@@ -12,6 +12,9 @@ import { RouterLink } from 'vue-router'
       <RouterLink class="btn btn-outline-light btn-sm" to="/demanda">
         <i class="fa-solid fa-list-check me-2"></i>Demanda
       </RouterLink>
+      <RouterLink class="btn btn-outline-light btn-sm" to="/fila">
+        <i class="fa-solid fa-list-ol me-2"></i>Fila
+      </RouterLink>
       <RouterLink class="btn btn-outline-light btn-sm px-3" to="/login">
         <i class="fa-solid fa-right-to-bracket me-2"></i>Entrar
       </RouterLink>

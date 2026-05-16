@@ -38,6 +38,7 @@ import Home from '@/views/Home.vue'
 
 //Painel público
 import Demanda from '@/views/painel/Demanda.vue'
+import Fila    from '@/views/painel/Fila.vue'
 
 
 
@@ -167,6 +168,12 @@ const router = createRouter({
           path: '/demanda',
           name: 'demanda',
           component: Demanda,
+          // sem requiresAuth — tela pública
+      },
+      {
+          path: '/fila',
+          name: 'fila',
+          component: Fila,
           // sem requiresAuth — tela pública
       },
       {
