@@ -4,6 +4,12 @@ export function ehSupremo() {
     return user?.categoria === 1
 }
 
+/** Retorna true se o usuário logado é Supremo (1) ou Coordenador (2). */
+export function ehGestor() {
+    const user = getUser()
+    return user?.categoria === 1 || user?.categoria === 2
+}
+
 export function getUser() {
     const token = localStorage.getItem("bat_token");
 
