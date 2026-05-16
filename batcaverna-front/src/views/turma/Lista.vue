@@ -2,9 +2,9 @@
   import NavAdmin from "@/components/NavAdmin.vue";
   import { ref, onMounted } from "vue";
   import { apiFetch } from "@/services/http.js";
-  import { getUser, ehSupremo } from "@/services/token.js";
+  import { getUser, ehGestor } from "@/services/token.js";
 
-  const supremo = ehSupremo()
+  const gestor = ehGestor()
 
   const usuario = getUser()
   const turmas  = ref([])
@@ -27,7 +27,7 @@
     <div class="pagina-header">
       <h4><i class="fa-solid fa-users me-2"></i>Turmas</h4>
       <div class="d-flex gap-2">
-        <RouterLink v-if="supremo" class="btn btn-dark btn-sm px-3" to="/turma/cadastro">
+        <RouterLink v-if="gestor" class="btn btn-dark btn-sm px-3" to="/turma/cadastro">
           <i class="fa-solid fa-plus me-1"></i>Nova
         </RouterLink>
         <RouterLink class="btn btn-outline-secondary btn-sm" to="/admin">
@@ -58,7 +58,7 @@
                 {{ turma.calendario.ano }}.{{ turma.calendario.semestre }}
               </td>
               <td class="text-end">
-                <div v-if="supremo" class="dropdown">
+                <div v-if="gestor" class="dropdown">
                   <button class="btn btn-sm btn-outline-secondary" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                     <i class="fa-solid fa-ellipsis-vertical"></i>
                   </button>

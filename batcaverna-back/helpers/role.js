@@ -16,3 +16,11 @@ export const ehSupremo = (req, res, next) => {
     }
     next()
 }
+
+/** Permite Supremo (categoria 1) ou Coordenador (categoria 2). */
+export const ehGestor = (req, res, next) => {
+    if (req.userCategoria !== 1 && req.userCategoria !== 2) {
+        return res.status(403).json({ message: 'Acesso restrito ao Supremo ou Coordenador.' })
+    }
+    next()
+}
