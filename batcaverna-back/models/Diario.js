@@ -10,7 +10,7 @@ const Diario = banco.sequelize.define('diarios', {
     },
     codigo:{
         type: banco.Sequelize.INTEGER,
-        allowNull: false
+        allowNull: true
     },
     descricao: {
         type: banco.Sequelize.STRING(100),
