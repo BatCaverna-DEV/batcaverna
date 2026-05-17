@@ -56,7 +56,7 @@ class DiarioController {
                 aulas_semana,
                 status:     1,
                 ministrada: 0,
-                codigo: 1
+                codigo: categoria,
             })
             return res.status(201).json(diario)
         } catch (err) {
