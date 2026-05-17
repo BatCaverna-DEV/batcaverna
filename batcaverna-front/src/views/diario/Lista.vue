@@ -41,10 +41,10 @@
         <table class="table table-hover mb-0">
           <thead>
             <tr>
-              <th>Descrição</th>
-              <th>Professor</th>
-              <th style="width:10%">Turma</th>
-              <th style="width:12%">Horário</th>
+              <th style="width: 20%;">Descrição</th>
+              <th style="width: 20%;">Professor</th>
+              <th style="width:20%">Turma</th>
+              <th style="width:17%">Horário</th>
               <th class="text-center" style="width:8%">H/A</th>
               <th class="text-center" style="width:10%">Ministrada</th>
               <th style="width:5%"></th>
