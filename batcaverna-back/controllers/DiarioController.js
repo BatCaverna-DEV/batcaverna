@@ -1,10 +1,7 @@
 import Diario from '../models/Diario.js'
-import Dia from '../models/Dia.js'
 import Professor from '../models/Professor.js'
 import Turma from '../models/Turma.js'
 import Curso from '../models/Curso.js'
-import Horario from '../models/Horario.js'
-import {interpretarHorarios} from "../helpers/data.js";
 
 class DiarioController {
 
@@ -38,47 +35,32 @@ class DiarioController {
     }//Fim do index
 
     cadastrar = async (req, res) => {
-        const dados = req.body
+        const { descricao, carga, turma_id } = req.body
 
-        dados.status = 1
-        dados.ministrada = 0
-
-        try{
-            const diario = await Diario.create(dados)
-            const horarios = interpretarHorarios(diario.horario)
-            for(let horario of horarios){
-                //Pega os dias
-                let dias = await Dia.findAll({
-                    where: {
-                        dia: horario.dia
-                    }
-                })
-
-                //Cria os horários para aquele dia
-                for(let dia of dias){
-                    if(dia.dia === horario.dia){
-                        let h = {
-                            ordem: horario.horario,
-                            turno: horario.turno,
-                            status: 0,
-                            dia_id: dia.id,
-                            diario_id: diario.id
-                        }
-                        await Horario.create(h)
-                    }
-                }
-
+        try {
+            const turma = await Turma.findByPk(turma_id, {
+                include: { model: Curso, as: 'curso' }
+            })
+            if (!turma) {
+                return res.status(404).json({ message: 'Turma não encontrada.' })
             }
-            return res.status(200).json(diario)
-        }catch(err){
-            res.status(400).json({error: err.message})
-        }
 
-        // Diario.create(diario).then((diario) => {
-        //     res.status(201).json(diario)
-        // }).catch((err) => {
-        //     res.status(500).json(err)
-        // })
+            const categoria = turma.curso.categoria
+            const hsPorAula = categoria === 1 ? 40 : 20
+            const aulas_semana = Math.round(carga / hsPorAula)
+
+            const diario = await Diario.create({
+                descricao,
+                carga,
+                turma_id,
+                aulas_semana,
+                status:     1,
+                ministrada: 0,
+            })
+            return res.status(201).json(diario)
+        } catch (err) {
+            return res.status(400).json({ message: err.message })
+        }
     }
 
 }//Fim da Classe

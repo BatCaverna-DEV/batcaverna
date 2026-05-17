@@ -6,41 +6,36 @@
   import { getUser } from "@/services/token.js";
 
   const router  = useRouter()
-  let usuario   = getUser()
-  let diario    = ref({ codigo: 0, descricao: '', carga: 0, professor_id: 0, turma_id: 0, horario: '' })
-  let professores = ref({})
-  let turmas    = ref({})
-  let erro      = ref('')
+  const usuario = getUser()
+  const diario  = ref({ descricao: '', carga: '', turma_id: '' })
+  const turmas  = ref([])
+  const erro    = ref('')
 
   onMounted(async () => {
-    let resposta = await apiFetch('/professor')
-    if (resposta.ok) {
-      professores.value = await resposta.json()
+    const resp = await apiFetch(`/turma/${usuario.professor_id}`)
+    if (resp.ok) {
+      turmas.value = await resp.json()
     } else {
-      let msg = await resposta.json()
+      const msg = await resp.json()
       erro.value = msg.message
-    }
-    let resposta2 = await apiFetch(`/turma/${usuario.professor_id}`)
-    if (resposta2.ok) {
-      turmas.value = await resposta2.json()
     }
   })
 
   async function salvar() {
     erro.value = ''
     try {
-      const resposta = await apiFetch("/diario/cadastro", {
-        method: "POST",
-        body: diario.value
+      const resposta = await apiFetch('/diario/cadastro', {
+        method: 'POST',
+        body: diario.value,
       })
       if (resposta.ok) {
         router.push('/diario/lista')
       } else {
         const msg = await resposta.json()
-        erro.value = `${resposta.status} - ${msg.message}`
+        erro.value = msg.message
       }
     } catch (e) {
-      erro.value = `${e.value}`
+      erro.value = 'Erro inesperado. Tente novamente.'
     }
   }
 </script>
@@ -64,48 +59,38 @@
 
       <form @submit.prevent="salvar">
         <div class="row g-3">
-          <div class="col-sm-2">
-            <label for="codigo" class="form-label">Código</label>
-            <input v-model="diario.codigo" type="number" id="codigo" required class="form-control" placeholder="0">
-          </div>
-          <div class="col-sm-7">
+
+          <div class="col-sm-8">
             <label for="descricao" class="form-label">Descrição da Disciplina</label>
             <input v-model="diario.descricao" type="text" id="descricao" required class="form-control" placeholder="Nome da disciplina">
           </div>
-          <div class="col-sm-3">
+
+          <div class="col-sm-4">
             <label for="carga" class="form-label">Carga Horária</label>
             <div class="input-group">
-              <input v-model="diario.carga" type="number" id="carga" required class="form-control" placeholder="60">
+              <input v-model.number="diario.carga" type="number" id="carga" required min="1" class="form-control" placeholder="60">
               <span class="input-group-text text-muted">h/a</span>
             </div>
           </div>
-          <div class="col-sm-6">
-            <label for="professor" class="form-label">Professor</label>
-            <select v-model="diario.professor_id" id="professor" required class="form-select">
-              <option value="0" disabled>Selecione o professor...</option>
-              <option v-for="professor in professores" :key="professor.id" :value="professor.id">
-                {{ professor.siape }} — {{ professor.nome }}
-              </option>
-            </select>
-          </div>
-          <div class="col-sm-4">
+
+          <div class="col-12">
             <label for="turma" class="form-label">Turma</label>
             <select v-model="diario.turma_id" id="turma" required class="form-select">
-              <option value="0" disabled>Selecione a turma...</option>
+              <option value="" disabled>Selecione a turma...</option>
               <option v-for="turma in turmas" :key="turma.id" :value="turma.id">
-                {{ turma.descricao }}
+                {{ turma.codigo }} — {{ turma.descricao }}
               </option>
             </select>
+            <div v-if="turmas.length === 0 && !erro" class="form-text text-muted">
+              Nenhuma turma encontrada para o seu vínculo de coordenação.
+            </div>
           </div>
-          <div class="col-sm-2">
-            <label for="horario" class="form-label">Horário</label>
-            <input v-model="diario.horario" type="text" id="horario" required class="form-control" placeholder="2M12/3T34">
-          </div>
+
         </div>
 
         <div class="form-footer">
           <RouterLink class="btn btn-outline-secondary" to="/diario/lista">Cancelar</RouterLink>
-          <button type="submit" class="btn btn-dark px-4">
+          <button type="submit" class="btn btn-dark px-4" :disabled="turmas.length === 0">
             <i class="fa-solid fa-floppy-disk me-2"></i>Salvar
           </button>
         </div>

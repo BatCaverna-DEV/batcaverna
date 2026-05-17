@@ -24,7 +24,8 @@
       "Bash(mysql -u root -e \"USE batcaverna; SHOW TABLES;\")",
       "Bash(Select-Object Name, PSIsContainer)",
       "Bash(Select-Object -Property Mode, Name)",
-      "Bash(node -e ' *)"
+      "Bash(node -e ' *)",
+      "Bash(node config/gerador.js --alter)"
     ]
   }
 }

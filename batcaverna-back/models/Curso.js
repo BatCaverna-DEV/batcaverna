@@ -11,6 +11,10 @@ const Curso = banco.sequelize.define('cursos', {
         type: banco.Sequelize.STRING(100),
         allowNull: false
     },
+    categoria: {
+        type: banco.Sequelize.INTEGER,
+        allowNull: false
+    },
     status:{
         type: banco.Sequelize.INTEGER,
         allowNull: false

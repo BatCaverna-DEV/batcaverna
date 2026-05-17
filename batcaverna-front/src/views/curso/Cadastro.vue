@@ -5,7 +5,7 @@
   import NavAdmin from "@/components/NavAdmin.vue";
 
   const router = useRouter()
-  let curso       = ref({ descricao: '', professor_id: 0 })
+  let curso       = ref({ descricao: '', categoria: '', professor_id: '' })
   let professores = ref({})
   let erro        = ref('')
 
@@ -58,10 +58,19 @@
             <label for="descricao" class="form-label">Descrição do Curso</label>
             <input v-model="curso.descricao" type="text" id="descricao" required class="form-control" placeholder="Nome completo do curso">
           </div>
+          <div class="col-sm-4">
+            <label for="categoria" class="form-label">Categoria</label>
+            <select v-model.number="curso.categoria" id="categoria" required class="form-select">
+              <option value="" disabled>Selecione a categoria...</option>
+              <option :value="1">Integrado</option>
+              <option :value="2">Subsequente</option>
+              <option :value="3">Superior</option>
+            </select>
+          </div>
           <div class="col-sm-8">
             <label for="professor_id" class="form-label">Coordenador</label>
             <select v-model="curso.professor_id" id="professor_id" required class="form-select">
-              <option value="0" disabled>Selecione o coordenador...</option>
+              <option value="" disabled>Selecione o coordenador...</option>
               <option v-for="professor in professores" :key="professor.id" :value="professor.id">
                 {{ professor.nome }}
               </option>
