@@ -4,17 +4,74 @@
   import { apiFetch } from "@/services/http.js";
   import { getUser, ehGestor } from "@/services/token.js";
 
-  const gestor = ehGestor()
-
+  const gestor  = ehGestor()
   const usuario = getUser()
   const turmas  = ref([])
 
-  onMounted(async () => {
-    let resposta = await apiFetch('/turma/' + usuario.professor_id);
-    if (resposta.ok) {
-      turmas.value = await resposta.json();
+  // --- edição ---
+  const editando    = ref(null)
+  const erroEdicao  = ref('')
+  const cursos      = ref([])
+  const calendarios = ref([])
+
+  async function abrirEdicao(turma) {
+    erroEdicao.value = ''
+    editando.value = {
+      id:            turma.id,
+      codigo:        turma.codigo,
+      descricao:     turma.descricao,
+      curso_id:      turma.curso.id,
+      calendario_id: turma.calendario.id,
+    }
+
+    if (cursos.value.length === 0) {
+      const r = await apiFetch('/curso')
+      if (r.ok) cursos.value = await r.json()
+    }
+    if (calendarios.value.length === 0) {
+      const r = await apiFetch('/calendario')
+      if (r.ok) calendarios.value = await r.json()
+    }
+  }
+
+  function fecharEdicao() {
+    editando.value = null
+    erroEdicao.value = ''
+  }
+
+  async function salvarEdicao() {
+    erroEdicao.value = ''
+    const payload = {
+      codigo:        editando.value.codigo,
+      descricao:     editando.value.descricao,
+      curso_id:      editando.value.curso_id,
+      calendario_id: editando.value.calendario_id,
+    }
+    const r = await apiFetch('/turma/' + editando.value.id, { method: 'PUT', body: payload })
+    if (r.ok) {
+      const idx = turmas.value.findIndex(t => t.id === editando.value.id)
+      if (idx !== -1) {
+        turmas.value[idx] = {
+          ...turmas.value[idx],
+          codigo:     payload.codigo,
+          descricao:  payload.descricao,
+          curso:      cursos.value.find(c => c.id === payload.curso_id) ?? turmas.value[idx].curso,
+          calendario: calendarios.value.find(c => c.id === payload.calendario_id) ?? turmas.value[idx].calendario,
+        }
+      }
+      fecharEdicao()
     } else {
-      let msg = await resposta.json()
+      const msg = await r.json()
+      erroEdicao.value = msg.message
+    }
+  }
+
+  onMounted(async () => {
+    const resposta = await apiFetch('/turma/' + usuario.professor_id)
+    if (resposta.ok) {
+      turmas.value = await resposta.json()
+    } else {
+      const msg = await resposta.json()
       alert('ERRO ' + resposta.status + ': ' + msg.message)
     }
   })
@@ -63,7 +120,7 @@
                     <i class="fa-solid fa-ellipsis-vertical"></i>
                   </button>
                   <ul class="dropdown-menu dropdown-menu-end shadow-sm">
-                    <li><a class="dropdown-item" href="#"><i class="fa-solid fa-pen me-2 text-secondary"></i>Editar</a></li>
+                    <li><a class="dropdown-item" href="#" @click.prevent="abrirEdicao(turma)"><i class="fa-solid fa-pen me-2 text-secondary"></i>Editar</a></li>
                     <li><hr class="dropdown-divider my-1"></li>
                     <li><a class="dropdown-item text-danger" href="#"><i class="fa-solid fa-trash me-2"></i>Excluir</a></li>
                   </ul>
@@ -79,4 +136,97 @@
     </div>
 
   </div>
+
+  <!-- Modal Editar Turma -->
+  <Teleport to="body">
+    <div v-if="editando" class="modal-backdrop-vue" @click.self="fecharEdicao">
+      <div class="modal-dialog modal-lg m-auto">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">
+              <i class="fa-solid fa-pen me-2"></i>Editar Turma
+            </h5>
+            <button type="button" class="btn-close" @click="fecharEdicao"></button>
+          </div>
+          <form @submit.prevent="salvarEdicao">
+            <div class="modal-body">
+
+              <div v-if="erroEdicao" class="alert alert-danger py-2 mb-3">
+                <i class="fa-solid fa-circle-exclamation me-2"></i>{{ erroEdicao }}
+              </div>
+
+              <div class="row g-3">
+
+                <div class="col-sm-5">
+                  <label class="form-label">Código</label>
+                  <input v-model="editando.codigo" type="text" required class="form-control font-monospace">
+                </div>
+
+                <div class="col-sm-7">
+                  <label class="form-label">Descrição</label>
+                  <input v-model="editando.descricao" type="text" required class="form-control">
+                </div>
+
+                <div class="col-sm-6">
+                  <label class="form-label">Curso</label>
+                  <select v-model="editando.curso_id" required class="form-select">
+                    <option v-for="c in cursos" :key="c.id" :value="c.id">
+                      {{ c.descricao }}
+                    </option>
+                  </select>
+                </div>
+
+                <div class="col-sm-6">
+                  <label class="form-label">Calendário</label>
+                  <select v-model="editando.calendario_id" required class="form-select">
+                    <option v-for="c in calendarios" :key="c.id" :value="c.id">
+                      {{ c.descricao }}
+                    </option>
+                  </select>
+                </div>
+
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-outline-secondary" @click="fecharEdicao">Cancelar</button>
+              <button type="submit" class="btn btn-dark px-4">
+                <i class="fa-solid fa-floppy-disk me-2"></i>Salvar
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </Teleport>
+
 </template>
+
+<style scoped>
+.modal-backdrop-vue {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, .5);
+  z-index: 1055;
+  display: flex;
+  align-items: flex-start;
+  padding: 60px 16px 40px;
+  overflow-y: auto;
+}
+.modal-backdrop-vue :deep(.modal-content) {
+  background-color: #fff;
+  border: 1px solid rgba(0, 0, 0, .175);
+  border-radius: .5rem;
+}
+.modal-backdrop-vue :deep(.modal-header) {
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid #dee2e6;
+}
+.modal-backdrop-vue :deep(.modal-body) {
+  padding: 1.5rem;
+}
+.modal-backdrop-vue :deep(.modal-footer) {
+  padding: 1rem 1.5rem;
+  border-top: 1px solid #dee2e6;
+  gap: .5rem;
+}
+</style>

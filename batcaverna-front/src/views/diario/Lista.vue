@@ -9,12 +9,80 @@
   const diarios = ref([])
   const turmaSelecionada = ref('')
 
-  onMounted(async () => {
-    let resposta = await apiFetch('/diario/' + usuario.professor_id);
-    if (resposta.ok) {
-      diarios.value = await resposta.json();
+  // --- edição ---
+  const editando    = ref(null)
+  const erroEdicao  = ref('')
+  const turmasEdit  = ref([])
+  const professores = ref([])
+
+  async function abrirEdicao(diario) {
+    erroEdicao.value = ''
+    editando.value = {
+      id:           diario.id,
+      descricao:    diario.descricao,
+      carga:        diario.carga,
+      turma_id:     diario.turma.id,
+      professor_id: diario.professor?.id ?? '',
+      ministrada:   diario.ministrada ?? 0,
+      horario:      diario.horario ?? '',
+      aulas_semana: diario.aulas_semana ?? '',
+    }
+
+    if (turmasEdit.value.length === 0) {
+      const r = await apiFetch('/turma/' + usuario.professor_id)
+      if (r.ok) turmasEdit.value = await r.json()
+    }
+    if (professores.value.length === 0) {
+      const r = await apiFetch('/professor')
+      if (r.ok) professores.value = await r.json()
+    }
+  }
+
+  function fecharEdicao() {
+    editando.value = null
+    erroEdicao.value = ''
+  }
+
+  async function salvarEdicao() {
+    erroEdicao.value = ''
+    const payload = {
+      descricao:    editando.value.descricao,
+      carga:        editando.value.carga,
+      turma_id:     editando.value.turma_id,
+      professor_id: editando.value.professor_id || null,
+      ministrada:   editando.value.ministrada,
+      horario:      editando.value.horario || null,
+      aulas_semana: editando.value.aulas_semana || null,
+    }
+    const r = await apiFetch('/diario/' + editando.value.id, { method: 'PUT', body: payload })
+    if (r.ok) {
+      const atualizado = await r.json()
+      const idx = diarios.value.findIndex(d => d.id === editando.value.id)
+      if (idx !== -1) {
+        diarios.value[idx] = {
+          ...diarios.value[idx],
+          descricao:    payload.descricao,
+          carga:        payload.carga,
+          turma_id:     payload.turma_id,
+          ministrada:   payload.ministrada,
+          horario:      payload.horario,
+          aulas_semana: payload.aulas_semana ?? atualizado.aulas_semana,
+          professor:    professores.value.find(p => p.id === payload.professor_id) ?? null,
+        }
+      }
+      fecharEdicao()
     } else {
-      let msg = await resposta.json()
+      const msg = await r.json()
+      erroEdicao.value = msg.message
+    }
+  }
+
+  onMounted(async () => {
+    const resposta = await apiFetch('/diario/' + usuario.professor_id)
+    if (resposta.ok) {
+      diarios.value = await resposta.json()
+    } else {
+      const msg = await resposta.json()
       alert('ERRO ' + resposta.status + ': ' + msg.message)
     }
   })
@@ -114,7 +182,7 @@
                       <i class="fa-solid fa-ellipsis-vertical"></i>
                     </button>
                     <ul class="dropdown-menu dropdown-menu-end shadow-sm">
-                      <li><a class="dropdown-item" href="#"><i class="fa-solid fa-pen me-2 text-secondary"></i>Editar</a></li>
+                      <li><a class="dropdown-item" href="#" @click.prevent="abrirEdicao(diario)"><i class="fa-solid fa-pen me-2 text-secondary"></i>Editar</a></li>
                       <li v-if="supremo"><hr class="dropdown-divider my-1"></li>
                       <li v-if="supremo"><a class="dropdown-item text-danger" href="#"><i class="fa-solid fa-trash me-2"></i>Excluir</a></li>
                     </ul>
@@ -127,6 +195,120 @@
       </div>
 
     </div>
-
   </div>
+
+  <!-- Modal Editar Diário (controlado por Vue, sem JS do Bootstrap) -->
+  <Teleport to="body">
+    <div v-if="editando" class="modal-backdrop-vue" @click.self="fecharEdicao">
+      <div class="modal-dialog modal-lg m-auto">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">
+              <i class="fa-solid fa-pen me-2"></i>Editar Diário
+            </h5>
+            <button type="button" class="btn-close" @click="fecharEdicao"></button>
+          </div>
+          <form @submit.prevent="salvarEdicao">
+            <div class="modal-body">
+
+              <div v-if="erroEdicao" class="alert alert-danger py-2 mb-3">
+                <i class="fa-solid fa-circle-exclamation me-2"></i>{{ erroEdicao }}
+              </div>
+
+              <div class="row g-3">
+
+                <div class="col-sm-8">
+                  <label class="form-label">Descrição</label>
+                  <input v-model="editando.descricao" type="text" required class="form-control">
+                </div>
+
+                <div class="col-sm-4">
+                  <label class="form-label">Carga Horária</label>
+                  <div class="input-group">
+                    <input v-model.number="editando.carga" type="number" required min="1" class="form-control">
+                    <span class="input-group-text text-muted">h/a</span>
+                  </div>
+                </div>
+
+                <div class="col-sm-6">
+                  <label class="form-label">Turma</label>
+                  <select v-model="editando.turma_id" required class="form-select">
+                    <option v-for="t in turmasEdit" :key="t.id" :value="t.id">
+                      {{ t.codigo }} — {{ t.descricao }}
+                    </option>
+                  </select>
+                </div>
+
+                <div class="col-sm-6">
+                  <label class="form-label">Professor</label>
+                  <select v-model="editando.professor_id" class="form-select">
+                    <option value="">— Sem professor —</option>
+                    <option v-for="p in professores" :key="p.id" :value="p.id">
+                      {{ p.nome }}
+                    </option>
+                  </select>
+                </div>
+
+                <div class="col-sm-4">
+                  <label class="form-label">Horas Ministradas</label>
+                  <div class="input-group">
+                    <input v-model.number="editando.ministrada" type="number" min="0" class="form-control">
+                    <span class="input-group-text text-muted">h/a</span>
+                  </div>
+                </div>
+
+                <div class="col-sm-5">
+                  <label class="form-label">Horário</label>
+                  <input v-model="editando.horario" type="text" class="form-control font-monospace" placeholder="ex: 3M12 / 5T34">
+                </div>
+
+                <div class="col-sm-3">
+                  <label class="form-label">Aulas Semanais</label>
+                  <input v-model.number="editando.aulas_semana" type="number" min="0" class="form-control">
+                </div>
+
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-outline-secondary" @click="fecharEdicao">Cancelar</button>
+              <button type="submit" class="btn btn-dark px-4">
+                <i class="fa-solid fa-floppy-disk me-2"></i>Salvar
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </Teleport>
+
 </template>
+
+<style scoped>
+.modal-backdrop-vue {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, .5);
+  z-index: 1055;
+  display: flex;
+  align-items: flex-start;
+  padding: 60px 16px 40px;
+  overflow-y: auto;
+}
+.modal-backdrop-vue :deep(.modal-content) {
+  background-color: #fff;
+  border: 1px solid rgba(0, 0, 0, .175);
+  border-radius: .5rem;
+}
+.modal-backdrop-vue :deep(.modal-header) {
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid #dee2e6;
+}
+.modal-backdrop-vue :deep(.modal-body) {
+  padding: 1.5rem;
+}
+.modal-backdrop-vue :deep(.modal-footer) {
+  padding: 1rem 1.5rem;
+  border-top: 1px solid #dee2e6;
+  gap: .5rem;
+}
+</style>

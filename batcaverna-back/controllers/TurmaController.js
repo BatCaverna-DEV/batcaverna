@@ -44,6 +44,25 @@ class TurmaController {
 
     }
 
+    atualizar = async (req, res) => {
+        const { codigo, descricao, curso_id, calendario_id } = req.body
+        try {
+            const turma = await Turma.findByPk(req.params.id)
+            if (!turma) {
+                return res.status(404).json({ message: 'Turma não encontrada.' })
+            }
+            await turma.update({
+                codigo:        codigo        ?? turma.codigo,
+                descricao:     descricao     ?? turma.descricao,
+                curso_id:      curso_id      ?? turma.curso_id,
+                calendario_id: calendario_id ?? turma.calendario_id,
+            })
+            return res.status(200).json(turma)
+        } catch (err) {
+            return res.status(400).json({ message: err.message })
+        }
+    }
+
 }
 
 export default new TurmaController()
