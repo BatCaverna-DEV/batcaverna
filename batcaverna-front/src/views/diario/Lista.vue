@@ -22,15 +22,15 @@
   const turmas = computed(() => {
     const map = new Map()
     diarios.value.forEach(d => {
-      if (!map.has(d.turma.id)) map.set(d.turma.id, d.turma)
+      if (d.turma && !map.has(d.turma.id)) map.set(d.turma.id, d.turma)
     })
     return [...map.values()]
   })
 
   const diariosAgrupados = computed(() => {
     const lista = turmaSelecionada.value
-      ? diarios.value.filter(d => d.turma.id === turmaSelecionada.value)
-      : diarios.value
+      ? diarios.value.filter(d => d.turma?.id === turmaSelecionada.value)
+      : diarios.value.filter(d => d.turma)
 
     const grupos = new Map()
     lista.forEach(d => {

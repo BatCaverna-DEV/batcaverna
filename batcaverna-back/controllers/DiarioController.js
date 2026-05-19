@@ -6,27 +6,27 @@ import Curso from '../models/Curso.js'
 class DiarioController {
 
     index = async (req, res) => {
-        let id = req.params.id
+        const id = req.params.id
+        const supremo = req.userCategoria === 1
+
+        const cursoInclude = {
+            model: Curso,
+            as: 'curso',
+            ...(supremo ? {} : { where: { professor_id: id } }),
+        }
+
+        const turmaInclude = {
+            model: Turma,
+            as: 'turma',
+            required: true,
+            include: cursoInclude,
+        }
+
         const diarios = await Diario.findAll({
-            where: {
-                status: 1
-            },
+            where: { status: 1 },
             include: [
-                {
-                    model: Professor,
-                    as: 'professor',
-                },
-                {
-                    model: Turma,
-                    as: 'turma',
-                    include: {
-                        model: Curso,
-                        as: 'curso',
-                        where: {
-                            professor_id: id
-                        }
-                    }
-                }
+                { model: Professor, as: 'professor' },
+                turmaInclude,
             ]
         })
 
