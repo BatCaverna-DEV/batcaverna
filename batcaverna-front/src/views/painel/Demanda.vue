@@ -366,7 +366,7 @@ async function liberar(tIdx, dIdx, diarioId) {
                 @click="abaAtiva = turma.id"
               >
                 <i class="fa-solid fa-users-rectangle small"></i>
-                {{ labelTurma(turma.codigo) }}
+                {{ turma.descricao }}
                 <span
                   class="badge rounded-pill"
                   :class="abaAtiva === turma.id ? 'bg-dark' : 'bg-secondary'"
