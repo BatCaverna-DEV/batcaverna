@@ -178,11 +178,10 @@
           <table class="table table-hover mb-0">
             <thead>
               <tr>
-                <th style="width: 32%;">Descrição</th>
-                <th style="width: 24%;">Professor</th>
-                <th style="width: 15%;">Horário</th>
-                <th class="text-center" style="width: 8%;">H/A</th>
-                <th class="text-center" style="width: 12%;">Ministrada</th>
+                <th style="width: 35%;">Descrição</th>
+                <th style="width: 30%;">Professor</th>
+                <th style="width: 15%;">SEMANAL</th>
+                <th class="text-center" style="width: 15%;">H/A</th>
                 <th style="width: 5%;"></th>
               </tr>
             </thead>
@@ -193,13 +192,8 @@
                   <span class="fw-semibold">{{ diario.descricao }}</span>
                 </td>
                 <td>{{ diario.professor?.nome ?? '—' }}</td>
-                <td><code class="text-dark">{{ diario.horario }}</code></td>
+                <td><code class="text-dark">{{ diario.aulas_semana }}</code></td>
                 <td class="text-center">{{ diario.carga }}</td>
-                <td class="text-center">
-                  <span :class="diario.ministrada >= diario.carga ? 'text-success fw-bold' : ''">
-                    {{ diario.ministrada }}
-                  </span>
-                </td>
                 <td class="text-end">
                   <div class="dropdown">
                     <button class="btn btn-sm btn-outline-secondary" type="button" data-bs-toggle="dropdown" aria-expanded="false">

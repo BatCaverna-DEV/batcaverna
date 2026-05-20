@@ -45,6 +45,19 @@ const totalCarga = computed(() =>
   diariosProfessor.value.reduce((soma, d) => soma + (d.carga ?? 0), 0)
 )
 
+// ── Agrupamento de cursos por categoria ──────────────────────────────────────
+const CATEGORIAS = { 1: 'Integrado', 2: 'Subsequente', 3: 'Superior' }
+
+const cursosAgrupados = computed(() => {
+  const map = new Map()
+  for (const curso of cursos.value) {
+    const cat = curso.categoria
+    if (!map.has(cat)) map.set(cat, { categoria: cat, label: CATEGORIAS[cat] ?? `Categoria ${cat}`, cursos: [] })
+    map.get(cat).cursos.push(curso)
+  }
+  return [...map.values()].sort((a, b) => a.categoria - b.categoria)
+})
+
 // ── Carrega a lista de cursos ao montar ───────────────────────────────────────
 onMounted(async () => {
   const resp = await apiFetch('/painel/cursos')
@@ -309,37 +322,45 @@ async function liberar(tIdx, dIdx, diarioId) {
         </div>
 
         <template v-else>
-          <p class="text-muted small mb-3">
+          <p class="text-muted small mb-4">
             Selecione o curso para visualizar as turmas e diários disponíveis:
           </p>
-          <div class="row g-3">
-            <div v-for="curso in cursos" :key="curso.id" class="col-12 col-sm-6 col-lg-4">
-              <div class="card-curso" @click="selecionarCurso(curso)" role="button">
-                <div class="card-curso__icone">
-                  <i class="fa-solid fa-graduation-cap"></i>
-                </div>
-                <div class="card-curso__nome">{{ curso.descricao }}</div>
-                <div class="card-curso__coord">
-                  <i class="fa-solid fa-user-tie me-1"></i>
-                  {{ curso.professor?.nome ?? 'Sem coordenador' }}
-                </div>
-                <div class="card-curso__stats">
-                  <span>
-                    <i class="fa-solid fa-users-rectangle me-1"></i>
-                    {{ curso.qtdTurmas }} turma{{ curso.qtdTurmas !== 1 ? 's' : '' }}
-                  </span>
-                  <span>
-                    <i class="fa-solid fa-book me-1"></i>
-                    {{ curso.qtdDiarios }} diário{{ curso.qtdDiarios !== 1 ? 's' : '' }}
-                  </span>
-                </div>
-                <div class="card-curso__acao">
-                  Ver diários <i class="fa-solid fa-arrow-right ms-1"></i>
+
+          <div v-if="!cursos.length" class="text-center text-muted py-4">
+            Nenhum curso cadastrado.
+          </div>
+
+          <div v-for="grupo in cursosAgrupados" :key="grupo.categoria" class="grupo-categoria mb-5">
+            <div class="grupo-categoria__header mb-3">
+              <span class="grupo-categoria__label">{{ grupo.label }}</span>
+              <span class="grupo-categoria__count">
+                {{ grupo.cursos.length }} curso{{ grupo.cursos.length !== 1 ? 's' : '' }}
+              </span>
+            </div>
+            <div class="row g-3">
+              <div v-for="curso in grupo.cursos" :key="curso.id" class="col-12 col-sm-6 col-lg-4">
+                <div class="card-curso" @click="selecionarCurso(curso)" role="button">
+                  <div class="card-curso__titulo">
+                    <div class="card-curso__icone">
+                      <i class="fa-solid fa-graduation-cap"></i>
+                    </div>
+                    <div class="card-curso__nome">{{ curso.descricao }}</div>
+                  </div>
+                  <div class="card-curso__coord">
+                    <i class="fa-solid fa-user-tie me-1"></i>
+                    {{ curso.professor?.nome ?? 'Sem coordenador' }}
+                  </div>
+                  <div class="card-curso__rodape">
+                    <div class="card-curso__stats">
+                      <span><i class="fa-solid fa-users-rectangle me-1"></i>{{ curso.qtdTurmas }} turma{{ curso.qtdTurmas !== 1 ? 's' : '' }}</span>
+                      <span><i class="fa-solid fa-book me-1"></i>{{ curso.qtdDiarios }} diário{{ curso.qtdDiarios !== 1 ? 's' : '' }}</span>
+                    </div>
+                    <div class="card-curso__acao">
+                      Ver diários <i class="fa-solid fa-arrow-right ms-1"></i>
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
-            <div v-if="!cursos.length" class="col-12 text-center text-muted py-4">
-              Nenhum curso cadastrado.
             </div>
           </div>
         </template>
@@ -628,39 +649,67 @@ async function liberar(tIdx, dIdx, diarioId) {
 }
 .breadcrumb-link.clicavel:hover { text-decoration-color: currentColor; }
 
+/* ── Grupos de categoria ──────────────────────────────────────────────────── */
+.grupo-categoria__header {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  padding-bottom: .5rem;
+  border-bottom: 2px solid #212529;
+}
+.grupo-categoria__label {
+  font-size: .7rem;
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: #212529;
+}
+.grupo-categoria__count {
+  font-size: .72rem;
+  color: #6c757d;
+}
+
 /* ── Cards de curso ───────────────────────────────────────────────────────── */
 .card-curso {
-  background: #fff; border: 1px solid #dee2e6; border-radius: .6rem;
-  padding: 1.4rem 1.25rem 1.1rem; cursor: pointer; height: 100%;
-  transition: transform .18s ease, box-shadow .18s ease, border-color .18s;
+  background: #fff; border: 1px solid #dee2e6; border-radius: .5rem;
+  padding: .7rem .9rem; cursor: pointer; height: 100%;
+  display: flex; flex-direction: column; gap: .25rem;
+  transition: transform .15s ease, box-shadow .15s ease, border-color .15s;
 }
 .card-curso:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 8px 24px rgba(0,0,0,.1);
+  transform: translateY(-3px);
+  box-shadow: 0 6px 18px rgba(0,0,0,.09);
   border-color: #adb5bd;
 }
+.card-curso__titulo {
+  display: flex; align-items: center; gap: .55rem;
+}
 .card-curso__icone {
-  width: 48px; height: 48px; border-radius: 50%;
-  background: #212529; color: #fff;
+  width: 26px; height: 26px; border-radius: 50%;
+  background: #212529; color: #fff; flex-shrink: 0;
   display: flex; align-items: center; justify-content: center;
-  font-size: 1.2rem; margin-bottom: .875rem;
+  font-size: .65rem;
 }
 .card-curso__nome {
-  font-weight: 700; font-size: .9rem;
-  text-transform: uppercase; letter-spacing: .04em;
-  color: #212529; margin-bottom: .35rem; line-height: 1.35;
+  font-weight: 700; font-size: .8rem;
+  text-transform: uppercase; letter-spacing: .03em;
+  color: #212529; line-height: 1.3;
 }
 .card-curso__coord {
-  font-size: .78rem; color: #6c757d; margin-bottom: .75rem;
+  font-size: .72rem; color: #6c757d;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  padding-left: calc(26px + .55rem);
+}
+.card-curso__rodape {
+  display: flex; align-items: center; justify-content: space-between;
+  padding-left: calc(26px + .55rem); margin-top: .1rem;
 }
 .card-curso__stats {
-  display: flex; gap: 1rem; font-size: .78rem;
-  color: #495057; margin-bottom: .75rem;
+  display: flex; gap: .65rem; font-size: .7rem; color: #6c757d;
 }
 .card-curso__acao {
-  font-size: .78rem; font-weight: 600; color: #212529;
-  opacity: 0; transition: opacity .18s;
+  font-size: .7rem; font-weight: 600; color: #212529;
+  opacity: 0; transition: opacity .15s; white-space: nowrap;
 }
 .card-curso:hover .card-curso__acao { opacity: 1; }
 
