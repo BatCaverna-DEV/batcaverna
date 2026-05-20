@@ -99,6 +99,32 @@ class DiarioController {
         }
     }
 
+    deletar = async (req, res) => {
+        try {
+            const diario = await Diario.findByPk(req.params.id, {
+                include: {
+                    model: Turma,
+                    as: 'turma',
+                    include: { model: Curso, as: 'curso' },
+                }
+            })
+            if (!diario) {
+                return res.status(404).json({ message: 'Diário não encontrado.' })
+            }
+
+            if (req.userCategoria === 2) {
+                if (diario.turma?.curso?.professor_id !== req.userProfessorId) {
+                    return res.status(403).json({ message: 'Acesso restrito aos diários do seu curso.' })
+                }
+            }
+
+            await diario.destroy()
+            return res.status(200).json({ message: 'Diário excluído com sucesso.' })
+        } catch (err) {
+            return res.status(400).json({ message: err.message })
+        }
+    }
+
 }//Fim da Classe
 
 export default new DiarioController();

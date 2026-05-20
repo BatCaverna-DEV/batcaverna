@@ -2,9 +2,10 @@
   import NavAdmin from "@/components/NavAdmin.vue";
   import { ref, onMounted, computed } from "vue";
   import { apiFetch } from "@/services/http.js";
-  import { getUser, ehSupremo } from "@/services/token.js";
+  import { getUser, ehSupremo, ehGestor } from "@/services/token.js";
 
   const supremo = ehSupremo()
+  const gestor  = ehGestor()
   const usuario = getUser()
   const diarios = ref([])
   const turmaSelecionada = ref('')
@@ -14,6 +15,29 @@
   const erroEdicao  = ref('')
   const turmasEdit  = ref([])
   const professores = ref([])
+
+  // --- exclusão ---
+  const excluindo = ref(null)
+
+  function confirmarExclusao(diario) {
+    excluindo.value = diario
+  }
+
+  function cancelarExclusao() {
+    excluindo.value = null
+  }
+
+  async function excluirDiario() {
+    const r = await apiFetch('/diario/' + excluindo.value.id, { method: 'DELETE' })
+    if (r.ok) {
+      diarios.value = diarios.value.filter(d => d.id !== excluindo.value.id)
+      excluindo.value = null
+    } else {
+      const msg = await r.json()
+      alert('ERRO: ' + msg.message)
+      excluindo.value = null
+    }
+  }
 
   async function abrirEdicao(diario) {
     erroEdicao.value = ''
@@ -183,8 +207,8 @@
                     </button>
                     <ul class="dropdown-menu dropdown-menu-end shadow-sm">
                       <li><a class="dropdown-item" href="#" @click.prevent="abrirEdicao(diario)"><i class="fa-solid fa-pen me-2 text-secondary"></i>Editar</a></li>
-                      <li v-if="supremo"><hr class="dropdown-divider my-1"></li>
-                      <li v-if="supremo"><a class="dropdown-item text-danger" href="#"><i class="fa-solid fa-trash me-2"></i>Excluir</a></li>
+                      <li v-if="gestor"><hr class="dropdown-divider my-1"></li>
+                      <li v-if="gestor"><a class="dropdown-item text-danger" href="#" @click.prevent="confirmarExclusao(diario)"><i class="fa-solid fa-trash me-2"></i>Excluir</a></li>
                     </ul>
                   </div>
                 </td>
@@ -196,6 +220,33 @@
 
     </div>
   </div>
+
+  <!-- Modal Confirmar Exclusão -->
+  <Teleport to="body">
+    <div v-if="excluindo" class="modal-backdrop-vue" @click.self="cancelarExclusao">
+      <div class="modal-dialog m-auto" style="max-width: 440px;">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title text-danger">
+              <i class="fa-solid fa-triangle-exclamation me-2"></i>Excluir Diário
+            </h5>
+            <button type="button" class="btn-close" @click="cancelarExclusao"></button>
+          </div>
+          <div class="modal-body">
+            <p class="mb-1">Tem certeza que deseja excluir o diário:</p>
+            <p class="fw-semibold mb-1">{{ excluindo.descricao }}</p>
+            <p class="text-muted small mb-0">Todos os horários vinculados também serão removidos. Esta ação não pode ser desfeita.</p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline-secondary" @click="cancelarExclusao">Cancelar</button>
+            <button type="button" class="btn btn-danger px-4" @click="excluirDiario">
+              <i class="fa-solid fa-trash me-2"></i>Excluir
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </Teleport>
 
   <!-- Modal Editar Diário (controlado por Vue, sem JS do Bootstrap) -->
   <Teleport to="body">
