@@ -33,7 +33,8 @@
       "Bash(sshpass -p 'Bat-1104#vps' ssh -o StrictHostKeyChecking=no root@69.62.97.146 \"mysql -u root -p'Bat#1104' batcaverna -e 'SHOW TABLES;'\")",
       "Bash(mysql -u root -p\"Bat#1104\" -e \"SHOW DATABASES;\")",
       "Bash(mysql -u root --password= -e \"DROP DATABASE IF EXISTS batcaverna; CREATE DATABASE batcaverna CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;\")",
-      "Bash(mysql -u root --password= --default-character-set=utf8mb4 batcaverna)"
+      "Bash(mysql -u root --password= --default-character-set=utf8mb4 batcaverna)",
+      "Read(//mnt/d/Github/**)"
     ]
   }
 }

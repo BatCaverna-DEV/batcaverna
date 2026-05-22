@@ -1,7 +1,7 @@
 <script setup>
   import NavAdmin from "@/components/NavAdmin.vue";
   import { ref, onMounted, computed } from "vue";
-  import { apiFetch } from "@/services/http.js";
+  import { apiFetch, apiFetchFile } from "@/services/http.js";
   import { getUser, ehSupremo, ehGestor } from "@/services/token.js";
 
   const supremo = ehSupremo()
@@ -15,6 +15,55 @@
   const erroEdicao  = ref('')
   const turmasEdit  = ref([])
   const professores = ref([])
+
+  // --- importação ---
+  const importandoModal  = ref(false)
+  const importandoArquivo = ref(false)
+  const arquivoImportar  = ref(null)
+  const erroImportar     = ref('')
+  const resultadoImportar = ref(null)
+
+  function abrirImportar() {
+    importandoModal.value   = true
+    arquivoImportar.value   = null
+    erroImportar.value      = ''
+    resultadoImportar.value = null
+  }
+
+  function fecharImportar() {
+    importandoModal.value   = false
+    arquivoImportar.value   = null
+    erroImportar.value      = ''
+    resultadoImportar.value = null
+  }
+
+  function onArquivoSelecionado(e) {
+    arquivoImportar.value = e.target.files[0] ?? null
+    erroImportar.value    = ''
+  }
+
+  async function executarImportacao() {
+    if (!arquivoImportar.value) return
+    erroImportar.value      = ''
+    resultadoImportar.value = null
+    importandoArquivo.value = true
+
+    const form = new FormData()
+    form.append('arquivo', arquivoImportar.value)
+
+    const r = await apiFetchFile('/diario/importar', form)
+    const data = await r.json()
+
+    if (r.ok) {
+      resultadoImportar.value = data
+      // Recarrega a lista para refletir novos diários
+      const resposta = await apiFetch('/diario/' + usuario.professor_id)
+      if (resposta.ok) diarios.value = await resposta.json()
+    } else {
+      erroImportar.value = data.message ?? 'Erro ao importar.'
+    }
+    importandoArquivo.value = false
+  }
 
   // --- exclusão ---
   const excluindo = ref(null)
@@ -140,6 +189,9 @@
     <div class="pagina-header">
       <h4><i class="fa-solid fa-book me-2"></i>Diários</h4>
       <div class="d-flex gap-2">
+        <button v-if="gestor" class="btn btn-outline-dark btn-sm px-3" @click="abrirImportar">
+          <i class="fa-solid fa-file-arrow-up me-1"></i>Importar
+        </button>
         <RouterLink class="btn btn-dark btn-sm px-3" to="/diario/cadastro">
           <i class="fa-solid fa-plus me-1"></i>Novo
         </RouterLink>
@@ -214,6 +266,112 @@
 
     </div>
   </div>
+
+  <!-- Modal Importar Planilha -->
+  <Teleport to="body">
+    <div v-if="importandoModal" class="modal-backdrop-vue" @click.self="fecharImportar">
+      <div class="modal-dialog modal-md m-auto">
+        <div class="modal-content">
+
+          <div class="modal-header">
+            <h5 class="modal-title">
+              <i class="fa-solid fa-file-arrow-up me-2"></i>Importar Diários
+            </h5>
+            <button type="button" class="btn-close" @click="fecharImportar"></button>
+          </div>
+
+          <div class="modal-body">
+
+            <!-- Resultado da importação -->
+            <template v-if="resultadoImportar">
+              <div class="alert alert-success py-2 mb-3">
+                <i class="fa-solid fa-circle-check me-2"></i>{{ resultadoImportar.message }}
+              </div>
+              <div class="mb-2 small text-muted">
+                <i class="fa-solid fa-calendar-days me-1"></i>
+                Calendário <strong>{{ resultadoImportar.calendario }}</strong>
+                &nbsp;·&nbsp;
+                <i class="fa-solid fa-graduation-cap me-1"></i>{{ resultadoImportar.curso }}
+              </div>
+              <table class="table table-sm mb-0">
+                <tbody>
+                  <tr>
+                    <td><i class="fa-solid fa-users-rectangle me-2 text-success"></i>Turmas criadas</td>
+                    <td class="text-end fw-bold text-success">{{ resultadoImportar.turmasCriadas }}</td>
+                  </tr>
+                  <tr>
+                    <td><i class="fa-solid fa-users-rectangle me-2 text-muted"></i>Turmas já existentes</td>
+                    <td class="text-end text-muted">{{ resultadoImportar.turmasExistentes }}</td>
+                  </tr>
+                  <tr>
+                    <td><i class="fa-solid fa-book me-2 text-success"></i>Diários criados</td>
+                    <td class="text-end fw-bold text-success">{{ resultadoImportar.diariosCriados }}</td>
+                  </tr>
+                  <tr>
+                    <td><i class="fa-solid fa-book me-2 text-muted"></i>Diários já existentes</td>
+                    <td class="text-end text-muted">{{ resultadoImportar.diariosExistentes }}</td>
+                  </tr>
+                </tbody>
+              </table>
+              <div v-if="resultadoImportar.erros?.length" class="mt-3">
+                <p class="small text-warning fw-semibold mb-1">
+                  <i class="fa-solid fa-triangle-exclamation me-1"></i>Linhas ignoradas:
+                </p>
+                <ul class="small text-muted mb-0 ps-3">
+                  <li v-for="(e, i) in resultadoImportar.erros" :key="i">{{ e }}</li>
+                </ul>
+              </div>
+            </template>
+
+            <!-- Formulário de upload -->
+            <template v-else>
+              <p class="text-muted small mb-3">
+                Selecione uma planilha <strong>.xls</strong> ou <strong>.xlsx</strong> com as colunas:
+                <strong>TURMA</strong>, <strong>COMPONENTE CURRICULAR</strong>, <strong>ANO LETIVO</strong>,
+                <strong>PERIODO LETIVO</strong> e <strong>HORARIO AULAS</strong>.
+              </p>
+              <div v-if="erroImportar" class="alert alert-danger py-2 mb-3">
+                <i class="fa-solid fa-circle-exclamation me-2"></i>{{ erroImportar }}
+              </div>
+              <div class="mb-0">
+                <label class="form-label fw-semibold">Arquivo</label>
+                <input
+                  type="file"
+                  accept=".xls,.xlsx"
+                  class="form-control"
+                  @change="onArquivoSelecionado"
+                  :disabled="importandoArquivo"
+                />
+              </div>
+            </template>
+
+          </div>
+
+          <div class="modal-footer">
+            <template v-if="resultadoImportar">
+              <button type="button" class="btn btn-dark px-4" @click="fecharImportar">
+                <i class="fa-solid fa-check me-1"></i>Concluir
+              </button>
+            </template>
+            <template v-else>
+              <button type="button" class="btn btn-outline-secondary" @click="fecharImportar">Cancelar</button>
+              <button
+                type="button"
+                class="btn btn-dark px-4"
+                :disabled="!arquivoImportar || importandoArquivo"
+                @click="executarImportacao"
+              >
+                <span v-if="importandoArquivo" class="spinner-border spinner-border-sm me-2" role="status"></span>
+                <i v-else class="fa-solid fa-file-arrow-up me-2"></i>
+                {{ importandoArquivo ? 'Importando…' : 'Importar' }}
+              </button>
+            </template>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </Teleport>
 
   <!-- Modal Confirmar Exclusão -->
   <Teleport to="body">

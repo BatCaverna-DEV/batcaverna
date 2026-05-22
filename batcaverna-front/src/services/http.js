@@ -21,3 +21,16 @@ export async function apiFetch(path, options = {}) {
     return resposta
 
 }//Fim do apiFetch
+
+/**
+ * Envia um FormData (multipart/form-data) com autenticação JWT.
+ * Não define Content-Type — o browser o define automaticamente com o boundary correto.
+ */
+export async function apiFetchFile(path, formData) {
+    const token = getToken()
+    return await fetch(`${API_BASE}${path}`, {
+        method: 'POST',
+        body: formData,
+        headers: { Authorization: `Bearer ${token}` },
+    })
+}//Fim do apiFetchFile
