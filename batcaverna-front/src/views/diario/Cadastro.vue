@@ -7,17 +7,24 @@
 
   const router  = useRouter()
   const usuario = getUser()
-  const diario  = ref({ descricao: '', carga: '', turma_id: '' })
+  const diario  = ref({ descricao: '', carga: '', turma_id: '', professor_id: '', aulas_semana: '' })
   const turmas  = ref([])
+  const professores = ref([])
   const erro    = ref('')
 
   onMounted(async () => {
-    const resp = await apiFetch(`/turma/${usuario.professor_id}`)
-    if (resp.ok) {
-      turmas.value = await resp.json()
+    const [respTurmas, respProfs] = await Promise.all([
+      apiFetch(`/turma/${usuario.professor_id}`),
+      apiFetch('/professor'),
+    ])
+    if (respTurmas.ok) {
+      turmas.value = await respTurmas.json()
     } else {
-      const msg = await resp.json()
+      const msg = await respTurmas.json()
       erro.value = msg.message
+    }
+    if (respProfs.ok) {
+      professores.value = await respProfs.json()
     }
   })
 
@@ -65,12 +72,26 @@
             <input v-model="diario.descricao" type="text" id="descricao" required class="form-control" placeholder="Nome da disciplina">
           </div>
 
-          <div class="col-sm-4">
+          <div class="col-sm-3">
             <label for="carga" class="form-label">Carga Horária</label>
             <div class="input-group">
               <input v-model.number="diario.carga" type="number" id="carga" required min="1" class="form-control" placeholder="60">
               <span class="input-group-text text-muted">h/a</span>
             </div>
+          </div>
+
+          <div class="col-sm-1">
+            <label for="aulas_semana" class="form-label">Aulas/sem.</label>
+            <input
+              v-model.number="diario.aulas_semana"
+              type="number"
+              id="aulas_semana"
+              min="1"
+              max="40"
+              class="form-control"
+              placeholder="Auto"
+              title="Deixe em branco para calcular automaticamente pela carga horária"
+            >
           </div>
 
           <div class="col-12">
@@ -84,6 +105,16 @@
             <div v-if="turmas.length === 0 && !erro" class="form-text text-muted">
               Nenhuma turma encontrada para o seu vínculo de coordenação.
             </div>
+          </div>
+
+          <div class="col-12">
+            <label for="professor" class="form-label">Professor <span class="text-muted fw-normal">(opcional)</span></label>
+            <select v-model="diario.professor_id" id="professor" class="form-select">
+              <option value="">Sem professor atribuído</option>
+              <option v-for="prof in professores" :key="prof.id" :value="prof.id">
+                {{ prof.nome }}
+              </option>
+            </select>
           </div>
 
         </div>
