@@ -4,26 +4,12 @@ const port = process.env.PORTA || 3000;
 
 import cors from 'cors';
 
-const allowedOrigins = (process.env.CORS_ORIGINS || 'http://localhost:5173')
-    .split(',')
-    .map(o => o.trim())
+// Em produção o CORS é gerenciado pelo Apache (evita headers duplicados).
+// Em dev local, libera todas as origens.
 
-app.use(cors({
-    origin: (origin, callback) => {
-        // permite requisições sem origin (ex: curl, Postman) e origens na lista
-        if (!origin || allowedOrigins.includes(origin)) {
-            callback(null, true)
-        } else {
-            callback(new Error(`CORS: origem não permitida → ${origin}`))
-        }
-    },
-    methods:     ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
-    credentials: true,
-}))
+app.use(cors());
 
-// responde imediatamente ao preflight de qualquer rota
-app.options('*', cors());
+
 app.use(express.json());
 
 //ROTAS

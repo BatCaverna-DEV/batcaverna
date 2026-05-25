@@ -38,7 +38,12 @@
       "Bash(rtk read *)",
       "Bash(ssh -o StrictHostKeyChecking=no -o ConnectTimeout=10 root@69.62.97.146 \"echo conectado && whoami\")",
       "Bash(rtk pip *)",
-      "Bash(python3 -c \"import paramiko; print\\('ok'\\)\")"
+      "Bash(python3 -c \"import paramiko; print\\('ok'\\)\")",
+      "Bash(mysql --version)",
+      "Bash(mariadb --version)",
+      "Bash(D:\\\\xampp\\\\mysql\\\\bin\\\\mysql.exe -u root -e \"DROP DATABASE IF EXISTS batcaverna; CREATE DATABASE batcaverna CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;\")",
+      "Bash(\"/mnt/d/xampp/mysql/bin/mysql.exe\" -u root -e \"DROP DATABASE IF EXISTS batcaverna; CREATE DATABASE batcaverna CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;\")",
+      "PowerShell(python3 \"D:\\\\Github\\\\batcaverna\\\\fix_dump.py\")"
     ]
   }
 }
