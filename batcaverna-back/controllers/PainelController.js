@@ -85,7 +85,7 @@ class PainelController {
                     { model: Professor, as: 'professor', required: false },
                     includeTurma,
                 ],
-                order: [['codigo', 'ASC']],
+                order: [['descricao', 'ASC']],
             })
 
             // Agrupa por turma mantendo a ordem de inserção
@@ -127,7 +127,7 @@ class PainelController {
                 }],
                 order: [
                     [{ model: Turma, as: 'turma' }, 'codigo', 'ASC'],
-                    ['codigo', 'ASC'],
+                    ['descricao', 'ASC'],
                 ],
             })
 

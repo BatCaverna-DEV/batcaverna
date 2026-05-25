@@ -27,7 +27,8 @@ class DiarioController {
             include: [
                 { model: Professor, as: 'professor' },
                 turmaInclude,
-            ]
+            ],
+            order: [['descricao', 'ASC']],
         })
 
         return res.status(200).json(diarios)
