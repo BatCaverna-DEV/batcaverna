@@ -13,6 +13,7 @@ import banco from './banco.js'
 // Nível 0 — sem dependências
 import Professor  from '../models/Professor.js'
 import Calendario from '../models/Calendario.js'
+import Motivo     from '../models/Motivo.js'
 
 // Nível 1 — dependem de Professor ou Calendário
 import Usuario    from '../models/Usuario.js'
@@ -28,6 +29,9 @@ import Diario     from '../models/Diario.js'
 // Nível 4 — depende de Diario + Dia
 import Horario    from '../models/Horario.js'
 
+// Nível 5 — depende de Professor + Motivo
+import Fila       from '../models/Fila.js'
+
 // ── Leitura dos flags da linha de comando ─────────────────────────────────────
 const args  = process.argv.slice(2)
 const force = args.includes('--force')
@@ -37,12 +41,14 @@ const alter = args.includes('--alter')
 const models = [
     { model: Professor,  nome: 'professores'  },
     { model: Calendario, nome: 'calendarios'  },
+    { model: Motivo,     nome: 'motivos'      },
     { model: Usuario,    nome: 'usuarios'     },
     { model: Curso,      nome: 'cursos'       },
     { model: Dia,        nome: 'dias'         },
     { model: Turma,      nome: 'turmas'       },
     { model: Diario,     nome: 'diarios'      },
     { model: Horario,    nome: 'horarios'     },
+    { model: Fila,       nome: 'filas'        },
 ]
 
 // ── Helpers de log ────────────────────────────────────────────────────────────

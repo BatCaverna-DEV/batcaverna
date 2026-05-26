@@ -34,7 +34,9 @@
       "Bash(mysql -u root -p\"Bat#1104\" -e \"SHOW DATABASES;\")",
       "Bash(mysql -u root --password= -e \"DROP DATABASE IF EXISTS batcaverna; CREATE DATABASE batcaverna CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;\")",
       "Bash(mysql -u root --password= --default-character-set=utf8mb4 batcaverna)",
-      "Read(//mnt/d/Github/**)"
+      "Read(//mnt/d/Github/**)",
+      "Bash(mysql -u root batcaverna -e \"SELECT id, nome, siape FROM professores WHERE status=1 ORDER BY nome;\")",
+      "Bash(mysql -u root batcaverna --default-character-set=utf8mb4)"
     ]
   }
 }
