@@ -4,7 +4,12 @@ const port = process.env.PORTA || 3000;
 
 import cors from 'cors';
 
+// Em produção o CORS é gerenciado pelo Apache (evita headers duplicados).
+// Em dev local, libera todas as origens.
+
 app.use(cors());
+
+
 app.use(express.json());
 
 //ROTAS

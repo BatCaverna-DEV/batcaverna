@@ -12,7 +12,8 @@ class ProfessorController {
                 model: Usuario,
                 as: 'usuario',
                 attributes: ['id', 'username', 'categoria', 'status'] // não traga o password
-            }]
+            }],
+            order: [['nome', 'ASC']],
         })
         return res.status(200).json(professores)
     }

@@ -27,7 +27,8 @@ class DiarioController {
             include: [
                 { model: Professor, as: 'professor' },
                 turmaInclude,
-            ]
+            ],
+            order: [['descricao', 'ASC']],
         })
 
         return res.status(200).json(diarios)
@@ -35,7 +36,7 @@ class DiarioController {
     }//Fim do index
 
     cadastrar = async (req, res) => {
-        const { descricao, carga, turma_id } = req.body
+        const { descricao, carga, turma_id, professor_id, aulas_semana: aulasSemanaReq } = req.body
 
         try {
             const turma = await Turma.findByPk(turma_id, {
@@ -47,13 +48,14 @@ class DiarioController {
 
             const categoria = turma.curso.categoria
             const hsPorAula = categoria === 1 ? 40 : 20
-            const aulas_semana = Math.round(carga / hsPorAula)
+            const aulas_semana = aulasSemanaReq != null ? Number(aulasSemanaReq) : Math.round(carga / hsPorAula)
 
             const diario = await Diario.create({
                 descricao,
                 carga,
                 turma_id,
                 aulas_semana,
+                professor_id: professor_id || null,
                 status:     1,
                 ministrada: 0,
                 codigo: categoria,
