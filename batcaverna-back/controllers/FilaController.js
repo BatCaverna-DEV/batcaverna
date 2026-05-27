@@ -1,22 +1,10 @@
-import xlsx from 'xlsx'
-import path from 'path'
-import { fileURLToPath } from 'url'
+import Fila      from '../models/Fila.js'
+import Professor from '../models/Professor.js'
+import Motivo    from '../models/Motivo.js'
+import Calendario from '../models/Calendario.js'
 
-const __filename = fileURLToPath(import.meta.url)
-const __dirname  = path.dirname(__filename)
-
-const SEMESTRES      = ['2023.1', '2023.2', '2024.1', '2024.2', '2025.1', '2025.2', '2026.1']
-const SEMESTRE_ATUAL = '2026.1'
-const HORARIOS_RUINS = ['Segunda - 07:00', 'Sexta - 18:00', 'Sexta - Noite', 'Três Noites']
-
-function parsearUltimaVez(valor) {
-    if (!valor) return null
-    if (typeof valor === 'string') return valor
-    if (valor instanceof Date) {
-        // Convenção do xlsx: mês 1 → semestre 1, mês 2 → semestre 2
-        return `${valor.getFullYear()}.${valor.getMonth() + 1}`
-    }
-    return null
+function semKey(ano, semestre) {
+    return `${ano}.${semestre}`
 }
 
 function semOrdem(s) {
@@ -27,50 +15,73 @@ function semOrdem(s) {
 
 class FilaController {
 
-    /**
-     * GET /fila
-     * Retorna a fila de horários ruins com histórico por semestre.
-     * Rota pública — sem autenticação.
-     */
-    listar = (req, res) => {
+    listar = async (req, res) => {
         try {
-            const filePath = path.join(__dirname, '..', 'fila.xlsx')
-            const wb = xlsx.readFile(filePath, { cellDates: true })
-            const ws = wb.Sheets['FILA']
-            const rows = xlsx.utils.sheet_to_json(ws, { header: 1, defval: null })
+            const [registros, motivosDb, todosProfessores] = await Promise.all([
+                Fila.findAll({
+                    include: [
+                        { model: Professor, as: 'professor', attributes: ['nome'], where: { status: 1 }, required: true },
+                        { model: Calendario, as: 'calendario', attributes: ['ano', 'semestre'] },
+                    ],
+                }),
+                Motivo.findAll({
+                    where: { status: 1 },
+                    attributes: ['descricao'],
+                    order: [['descricao', 'ASC']],
+                }),
+                Professor.findAll({
+                    where: { status: 1 },
+                    attributes: ['nome'],
+                }),
+            ])
 
-            const professores = []
-            for (let i = 1; i < rows.length; i++) {
-                const row = rows[i]
-                if (!row[0] || typeof row[0] !== 'string' || !row[0].trim()) break
+            const horariosRuins = motivosDb.map(m => m.descricao)
 
-                const historico = {}
-                SEMESTRES.forEach((sem, idx) => {
-                    historico[sem] = row[idx + 1] === 'X'
-                })
+            // Semestres únicos ordenados cronologicamente
+            const semestresSet = new Set()
+            for (const r of registros) {
+                semestresSet.add(semKey(r.calendario.ano, r.calendario.semestre))
+            }
+            const semestres   = [...semestresSet].sort((a, b) => semOrdem(a) - semOrdem(b))
+            const semestreAtual = semestres.at(-1) ?? ''
 
-                professores.push({
-                    nome:      row[0].trim(),
-                    historico,
-                    ultimaVez: parsearUltimaVez(row[8]),
-                })
+            // Agrupa registros por professor, construindo o histórico
+            const mapa = {}
+            for (const r of registros) {
+                const nome = r.professor.nome
+                if (!mapa[nome]) {
+                    mapa[nome] = { nome, historico: Object.fromEntries(semestres.map(s => [s, false])) }
+                }
+                mapa[nome].historico[semKey(r.calendario.ano, r.calendario.semestre)] = true
             }
 
-            // Ascending: quem ficou há mais tempo → primeiro da fila
+            // Professores ativos sem nenhum registro na fila
+            const nomesNaFila = new Set(Object.keys(mapa))
+            for (const prof of todosProfessores) {
+                if (!nomesNaFila.has(prof.nome)) {
+                    mapa[prof.nome] = {
+                        nome: prof.nome,
+                        historico: Object.fromEntries(semestres.map(s => [s, false])),
+                    }
+                }
+            }
+
+            // Calcula ultimaVez (último semestre em que aparece na fila)
+            const professores = Object.values(mapa).map(p => ({
+                ...p,
+                ultimaVez: semestres.filter(s => p.historico[s]).at(-1) ?? null,
+            }))
+
+            // Quem ficou há mais tempo vem primeiro
             professores.sort((a, b) => semOrdem(a.ultimaVez) - semOrdem(b.ultimaVez))
 
-            // Quem está servindo este semestre não tem posição numérica
+            // Quem está servindo este semestre não recebe número de posição
             let pos = 1
             for (const p of professores) {
-                p.posicao = p.historico[SEMESTRE_ATUAL] ? null : pos++
+                p.posicao = p.historico[semestreAtual] ? null : pos++
             }
 
-            return res.status(200).json({
-                semestres:    SEMESTRES,
-                semestreAtual: SEMESTRE_ATUAL,
-                horariosRuins: HORARIOS_RUINS,
-                professores,
-            })
+            return res.status(200).json({ semestres, semestreAtual, horariosRuins, professores })
         } catch (err) {
             return res.status(500).json({ message: err.message })
         }

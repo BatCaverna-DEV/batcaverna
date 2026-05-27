@@ -24,6 +24,8 @@
     { to: '/curso/lista',      icon: 'fa-layer-group',       cor: '#198754', bg: '#e6f4ee', titulo: 'Cursos',       descricao: 'Cursos e coordenações' },
     { to: '/turma/lista',      icon: 'fa-users',             cor: '#fd7e14', bg: '#fff3e6', titulo: 'Turmas',       descricao: 'Turmas por curso e semestre' },
     { to: '/diario/lista',     icon: 'fa-book',              cor: '#dc3545', bg: '#fdecea', titulo: 'Diários',      descricao: 'Registro de aulas e horários' },
+    { to: '/fila',             icon: 'fa-list-ol',           cor: '#6610f2', bg: '#ede7ff', titulo: 'Fila',         descricao: 'Rodízio de horários ruins' },
+    { to: '/demanda',          icon: 'fa-list-check',        cor: '#0dcaf0', bg: '#e0f9ff', titulo: 'Demanda',      descricao: 'Alocação de professores por curso' },
   ]
 </script>
 

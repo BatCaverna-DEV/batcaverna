@@ -1,8 +1,8 @@
-import banco     from '../config/banco.js'
-import Diario    from '../models/Diario.js'
-import Professor from '../models/Professor.js'
-import Turma     from '../models/Turma.js'
-import Curso     from '../models/Curso.js'
+import banco      from '../config/banco.js'
+import Diario     from '../models/Diario.js'
+import Professor  from '../models/Professor.js'
+import Turma      from '../models/Turma.js'
+import Curso      from '../models/Curso.js'
 import Calendario from '../models/Calendario.js'
 
 class PainelController {
