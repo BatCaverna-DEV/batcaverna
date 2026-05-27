@@ -143,7 +143,8 @@ id      UUID PK
 nome    STRING(100)
 siape   STRING(20)    Identificador único
 email   STRING(100)
-status  INTEGER
+status  INTEGER       1=ativo, 2=afastado, 3=inativo
+tipo    INTEGER       1=docente, 2=administrador
 ```
 
 ### Curso
@@ -260,7 +261,14 @@ Dado `inicio` e `fim`, o sistema gera automaticamente todos os dias úteis (seg�
 
 ### Soft delete
 
-Nenhuma entidade é removida fisicamente. O campo `status=0` marca o registro como inativo; todas as listagens filtram por `status=1`.
+Nenhuma entidade é removida fisicamente. Todas as listagens filtram por `status=1`.
+
+> **Status do Professor** diferem das demais entidades:
+> `1` = Ativo, `2` = Afastado, `3` = Inativo.
+> As demais entidades (Curso, Turma, Diário, etc.) seguem o padrão `1` = ativo / `0` = inativo.
+> Regras de exibição:
+> - Painel admin (`/professor`): mostra Ativos e Afastados (`status != 3`)
+> - Carga horária, Fila, Painel público: apenas Ativos (`status = 1`)
 
 ---
 

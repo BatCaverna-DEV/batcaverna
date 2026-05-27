@@ -241,7 +241,7 @@ async function liberar(tIdx, dIdx, diarioId) {
 
     <div class="pagina-body">
 
-      <!-- ── Painel de identificação ────────────────────────────────────────── -->
+      <!-- ── Painel de identificação (oculto no modo gestor) ──────────────────── -->
       <div class="ident-card mb-4" :class="{ 'ident-card--ok': professor }">
 
         <!-- Não identificado -->
