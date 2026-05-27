@@ -8,5 +8,6 @@ import { ehGestor }  from '../helpers/role.js'
 router.get('/:id',       auth,           turma.index)
 router.post('/cadastro', auth, ehGestor, turma.cadastrar)
 router.put('/:id',       auth, ehGestor, turma.atualizar)
+router.delete('/:id',    auth, ehGestor, turma.deletar)
 
 export default router
