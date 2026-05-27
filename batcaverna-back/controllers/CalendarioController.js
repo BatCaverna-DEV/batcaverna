@@ -1,6 +1,4 @@
-import Calendario from '../models/Calendario.js'
-import Dia from '../models/Dia.js'
-import {gerarDias} from "../helpers/data.js";
+import Calendario from '../models/Calendario.js';
 
 class CalendarioController {
 
@@ -18,13 +16,6 @@ class CalendarioController {
 
         try{
             const calendario = await Calendario.create(dados)
-            calendario.dias = []
-            const dias = gerarDias(calendario.inicio, calendario.fim)
-            for await (const dia of dias){
-                dia.calendario_id = calendario.id
-                const d = await Dia.create(dia)
-                calendario.dias.push(d)
-            }
             return res.status(200).json(calendario)
         }catch(err){
             res.status(500).json({message: err.message})
@@ -81,18 +72,6 @@ class CalendarioController {
         res.status(200).json(semana)
 
     }//Fim semana
-
-    testar  = async (req, res) => {
-        const inicio = req.body.inicio
-        const fim = req.body.fim
-
-        const dias = gerarDias(inicio, fim)
-
-
-        return res.status(200).json(dias)
-
-    }
-
 
 }
 

@@ -97,7 +97,6 @@
       turma_id:     diario.turma.id,
       professor_id: diario.professor?.id ?? '',
       ministrada:   diario.ministrada ?? 0,
-      horario:      diario.horario ?? '',
       aulas_semana: diario.aulas_semana ?? '',
     }
 
@@ -124,7 +123,6 @@
       turma_id:     editando.value.turma_id,
       professor_id: editando.value.professor_id || null,
       ministrada:   editando.value.ministrada,
-      horario:      editando.value.horario || null,
       aulas_semana: editando.value.aulas_semana || null,
     }
     const r = await apiFetch('/diario/' + editando.value.id, { method: 'PUT', body: payload })
@@ -138,7 +136,6 @@
           carga:        payload.carga,
           turma_id:     payload.turma_id,
           ministrada:   payload.ministrada,
-          horario:      payload.horario,
           aulas_semana: payload.aulas_semana ?? atualizado.aulas_semana,
           professor:    professores.value.find(p => p.id === payload.professor_id) ?? null,
         }
@@ -387,7 +384,7 @@
           <div class="modal-body">
             <p class="mb-1">Tem certeza que deseja excluir o diário:</p>
             <p class="fw-semibold mb-1">{{ excluindo.descricao }}</p>
-            <p class="text-muted small mb-0">Todos os horários vinculados também serão removidos. Esta ação não pode ser desfeita.</p>
+            <p class="text-muted small mb-0">Esta ação não pode ser desfeita.</p>
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-outline-secondary" @click="cancelarExclusao">Cancelar</button>
@@ -460,12 +457,7 @@
                   </div>
                 </div>
 
-                <div class="col-sm-5">
-                  <label class="form-label">Horário</label>
-                  <input v-model="editando.horario" type="text" class="form-control font-monospace" placeholder="ex: 3M12 / 5T34">
-                </div>
-
-                <div class="col-sm-3">
+                <div class="col-sm-4">
                   <label class="form-label">Aulas Semanais</label>
                   <input v-model.number="editando.aulas_semana" type="number" min="0" class="form-control">
                 </div>
