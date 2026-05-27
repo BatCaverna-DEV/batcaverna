@@ -75,7 +75,7 @@ class ProfessorController {
                     status:       1,
                     professor_id: { [Op.not]: null },
                 },
-                attributes: ['id', 'codigo', 'descricao', 'aulas_semana', 'carga', 'horario', 'professor_id'],
+                attributes: ['id', 'codigo', 'descricao', 'aulas_semana', 'carga', 'professor_id'],
                 include: [{ model: Turma, as: 'turma', attributes: ['codigo', 'descricao'] }],
                 order: [['descricao', 'ASC']],
             })

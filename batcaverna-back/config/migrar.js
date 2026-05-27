@@ -17,7 +17,6 @@ import { readFileSync }          from 'fs'
 import { resolve, dirname }      from 'path'
 import { fileURLToPath }         from 'url'
 import XLSX                      from 'xlsx'
-import { interpretarHorarios, gerarDias } from '../helpers/data.js'
 import banco                     from './banco.js'
 import Professor                 from '../models/Professor.js'
 import Usuario                   from '../models/Usuario.js'
@@ -25,8 +24,6 @@ import Calendario                from '../models/Calendario.js'
 import Curso                     from '../models/Curso.js'
 import Turma                     from '../models/Turma.js'
 import Diario                    from '../models/Diario.js'
-import Dia                       from '../models/Dia.js'
-import Horario                   from '../models/Horario.js'
 
 // ── Caminhos ──────────────────────────────────────────────────────────────────
 
@@ -114,10 +111,8 @@ function buscarProfessor(nomeParcial, professores) {
 async function limparDados() {
     console.log(' ⚠️   Modo --limpar: removendo dados existentes...')
     // Ordem inversa às dependências de FK
-    await Horario.destroy({ where: {} })
     await Diario.destroy({ where: {} })
     await Turma.destroy({ where: {} })
-    await Dia.destroy({ where: {} })
     await Curso.destroy({ where: {} })
     await Calendario.destroy({ where: {} })
     await Usuario.destroy({ where: {} })
@@ -210,9 +205,9 @@ async function migrar() {
     sep()
 
     // ─────────────────────────────────────────────────────────────────────────
-    // FASE 2 — Calendário e Dias Úteis
+    // FASE 2 — Calendário
     // ─────────────────────────────────────────────────────────────────────────
-    console.log(' 📅  FASE 2 — Calendário e Dias Úteis')
+    console.log(' 📅  FASE 2 — Calendário')
     sep()
 
     const [calendario, calCriado] = await Calendario.findOrCreate({
@@ -220,23 +215,7 @@ async function migrar() {
         defaults: CONFIG_CALENDARIO,
     })
 
-    if (calCriado) {
-        ok(`Calendário criado: ${CONFIG_CALENDARIO.descricao}`)
-        ok(`Período: ${CONFIG_CALENDARIO.inicio} → ${CONFIG_CALENDARIO.fim}`)
-
-        const dias = gerarDias(CONFIG_CALENDARIO.inicio, CONFIG_CALENDARIO.fim)
-        for (const dia of dias) {
-            await Dia.create({
-                data:          dia.data,
-                dia:           dia.dia,
-                calendario_id: calendario.id,
-            })
-        }
-        ok(`${dias.length} dia(s) útil(eis) gerado(s).`)
-    } else {
-        ok(`Calendário ${CONFIG_CALENDARIO.descricao} já existe — dias mantidos.`)
-    }
-
+    ok(`Calendário "${CONFIG_CALENDARIO.descricao}" ${calCriado ? 'criado' : 'já existe'}.`)
     sep()
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -291,24 +270,21 @@ async function migrar() {
     sep()
 
     // ─────────────────────────────────────────────────────────────────────────
-    // FASE 5 — Diários e Horários
+    // FASE 5 — Diários
     // ─────────────────────────────────────────────────────────────────────────
-    console.log(' 📓  FASE 5 — Diários e Horários')
+    console.log(' 📓  FASE 5 — Diários')
     sep()
 
-    const todosProfessores  = Object.values(mapSiapeProf)
-    let criadosDiarios      = 0
-    let existentesDiarios   = 0
-    let errosDiarios        = 0
-    let totalHorariosCriados = 0
+    const todosProfessores = Object.values(mapSiapeProf)
+    let criadosDiarios     = 0
+    let existentesDiarios  = 0
+    let errosDiarios       = 0
 
     for (const row of rowsDiarios) {
         const codigoTurma   = String(row['TURMA']                  ?? '').trim()
         const componente    = String(row['COMPONENTE CURRICULAR']   ?? '').trim()
         const nomeProfessor = String(row['NOMES PROFESSORES']       ?? '').trim()
-        const horarioStr    = String(row['HORARIO AULAS']           ?? '').trim()
 
-        // Localiza a turma pelo código
         const turma = mapCodigoTurma[codigoTurma]
         if (!turma) {
             warn(`Turma "${codigoTurma}" não encontrada → diário ignorado`)
@@ -316,7 +292,6 @@ async function migrar() {
             continue
         }
 
-        // Localiza o professor pelo nome parcial
         const professor = buscarProfessor(nomeProfessor, todosProfessores)
         if (!professor) {
             warn(`Professor "${nomeProfessor}" não encontrado → diário ignorado`)
@@ -325,13 +300,9 @@ async function migrar() {
         }
 
         const { codigo, descricao, carga } = parsearComponente(componente)
+        const aulas_semana = carga ? Math.round(carga / 20) : 0
 
-        // Conta quantos slots semanais válidos o horário possui (exclui sábado = dia undefined)
-        const aulas_semana = horarioStr
-            ? interpretarHorarios(horarioStr).filter(s => s.dia).length
-            : 0
-
-        const [diario, criado] = await Diario.findOrCreate({
+        const [, criado] = await Diario.findOrCreate({
             where: {
                 codigo,
                 turma_id:     turma.id,
@@ -344,61 +315,22 @@ async function migrar() {
                 aulas_semana,
                 ministrada:   0,
                 status:       1,
-                horario:      horarioStr,
                 turma_id:     turma.id,
                 professor_id: professor.id,
             },
         })
 
-        if (!criado) {
-            existentesDiarios++
-            continue
-        }
+        if (!criado) { existentesDiarios++; continue }
 
         criadosDiarios++
         ok(`${descricao}`)
-        info(`└─ Prof: ${professor.nome.split(' ').slice(0, 3).join(' ')} | Horário: ${horarioStr}`)
-
-        // Gera registros de Horário para cada slot da grade
-        try {
-            const slots = interpretarHorarios(horarioStr)
-            let contHorarios = 0
-
-            for (const slot of slots) {
-                if (!slot.dia) continue   // ignora dias fora do mapa (ex: sábado = 7)
-
-                const dias = await Dia.findAll({
-                    where: {
-                        dia:           slot.dia,
-                        calendario_id: calendario.id,
-                    },
-                })
-
-                for (const dia of dias) {
-                    await Horario.create({
-                        ordem:      slot.horario,
-                        turno:      slot.turno,
-                        status:     0,
-                        dia_id:     dia.id,
-                        diario_id:  diario.id,
-                    })
-                    contHorarios++
-                }
-            }
-
-            totalHorariosCriados += contHorarios
-            if (contHorarios > 0) info(`└─ ${contHorarios} horário(s) inserido(s)`)
-
-        } catch (e) {
-            warn(`└─ Erro ao gerar horários de "${horarioStr}": ${e.message}`)
-        }
+        info(`└─ Prof: ${professor.nome.split(' ').slice(0, 3).join(' ')}`)
     }
 
     sep()
     console.log(' ✅  Migração concluída!')
     ok(`Professores:  ${criadosProfessores} criado(s), ${existentesProfessores} já existia(m)`)
     ok(`Diários:      ${criadosDiarios} criado(s), ${existentesDiarios} já existia(m), ${errosDiarios} erro(s)`)
-    ok(`Horários:     ${totalHorariosCriados} registro(s) inserido(s)`)
     sep()
 }
 

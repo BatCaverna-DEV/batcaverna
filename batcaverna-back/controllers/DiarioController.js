@@ -67,7 +67,7 @@ class DiarioController {
     }
 
     atualizar = async (req, res) => {
-        const { descricao, carga, turma_id, professor_id, ministrada, horario, aulas_semana } = req.body
+        const { descricao, carga, turma_id, professor_id, ministrada, aulas_semana } = req.body
 
         try {
             const diario = await Diario.findByPk(req.params.id)
@@ -90,7 +90,6 @@ class DiarioController {
                 turma_id:     turma_id     ?? diario.turma_id,
                 professor_id: professor_id !== undefined ? (professor_id || null) : diario.professor_id,
                 ministrada:   ministrada   ?? diario.ministrada,
-                horario:      horario      !== undefined ? (horario || null) : diario.horario,
                 aulas_semana: aulas_semana ?? aulas_semana_calc,
                 codigo: categoria,
             })

@@ -418,7 +418,6 @@ async function liberar(tIdx, dIdx, diarioId) {
                   <thead>
                     <tr>
                       <th>Componente Curricular</th>
-                      <th style="width:15%">Horário</th>
                       <th class="text-center" style="width:5%">CH</th>
                       <th style="width:24%">Professor</th>
                       <th v-if="professor" style="width:10%"></th>
@@ -439,7 +438,6 @@ async function liberar(tIdx, dIdx, diarioId) {
                         </span>
                         <span class="fw-semibold">{{ diario.descricao }}</span>
                       </td>
-                      <td><code class="text-dark small">{{ diario.horario }}</code></td>
                       <td class="text-center text-muted">{{ diario.carga }}h</td>
                       <td>
                         <template v-if="diario.professor">
@@ -481,7 +479,7 @@ async function liberar(tIdx, dIdx, diarioId) {
                       </td>
                     </tr>
                     <tr v-if="!turma.diarios.length">
-                      <td :colspan="professor ? 5 : 4" class="text-center text-muted py-4">
+                      <td :colspan="professor ? 4 : 3" class="text-center text-muted py-4">
                         Nenhum diário cadastrado para esta turma.
                       </td>
                     </tr>
@@ -563,9 +561,6 @@ async function liberar(tIdx, dIdx, diarioId) {
                         SUP.{{ String(diario.codigo).padStart(5, '0') }}
                       </span>
                       <span class="fw-semibold">{{ diario.descricao }}</span>
-                    </td>
-                    <td class="text-muted" style="width:16%">
-                      <code class="text-dark small">{{ diario.horario }}</code>
                     </td>
                     <td class="text-center text-muted" style="width:6%">
                       {{ diario.carga }}h
