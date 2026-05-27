@@ -37,7 +37,29 @@
       "Read(//mnt/d/Github/**)",
       "Bash(mysql -u root batcaverna -e \"SELECT id, nome, siape FROM professores WHERE status=1 ORDER BY nome;\")",
       "Bash(mysql -u root batcaverna --default-character-set=utf8mb4)",
-      "Bash(git -C \"D:/Github/batcaverna\" checkout -b escolha-dia)"
+      "Bash(xargs grep -l \"defineStore\\\\|createStore\\\\|Pinia\\\\|useState\")",
+      "Bash(xargs ls -lh)",
+      "Bash(mysqldump -u root --no-tablespaces batcaverna filas > C:/Temp/filas_dump.sql 2>&1 && echo \"Dump OK\" || echo \"Erro no dump\")",
+      "Bash(mkdir -p /tmp)",
+      "Bash(mysqldump -u root --no-tablespaces batcaverna filas)",
+      "Read(//tmp/**)",
+      "Bash(scp -o StrictHostKeyChecking=no /tmp/filas_dump.sql root@69.62.97.146:/tmp/filas_dump.sql)",
+      "Bash(apt-get install *)",
+      "Bash(pacman -S --noconfirm sshpass)",
+      "Bash(mysql -h 69.62.97.146 -u root -p'Bat#1104' batcaverna)",
+      "Read(//c/Program Files/PuTTY/**)",
+      "Read(//c/Program Files \\(x86\\)/PuTTY/**)",
+      "Bash(python3 -c \"import paramiko; print\\('paramiko OK'\\)\")",
+      "Bash(python -c \"import paramiko; print\\('paramiko OK'\\)\")",
+      "Bash(python3)",
+      "Read(//c/Users/brunn/.ssh/**)",
+      "Bash(mysqldump -u root --no-tablespaces batcaverna filas > \"C:/Users/brunn/AppData/Local/Temp/filas_dump.sql\" 2>&1 && echo \"OK\")",
+      "Bash(mysqldump -u root --no-tablespaces batcaverna calendarios)",
+      "Bash(xargs grep -l \"require.*Dia\\\\|require.*Horario\\\\|from.*Dia\\\\|from.*Horario\")",
+      "Bash(Remove-Item \"D:\\\\Github\\\\batcaverna\\\\batcaverna-back\\\\models\\\\Dia.js\" -Force)",
+      "Bash(Remove-Item \"D:\\\\Github\\\\batcaverna\\\\batcaverna-back\\\\models\\\\Horario.js\" -Force)",
+      "Bash(Remove-Item \"D:\\\\Github\\\\batcaverna\\\\batcaverna-back\\\\helpers\\\\data.js\" -Force)",
+      "Bash(Write-Host \"Arquivos removidos.\")"
     ]
   }
 }

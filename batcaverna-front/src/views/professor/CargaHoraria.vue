@@ -165,9 +165,7 @@ function corBarra(aulas) {
                                 <td class="text-center fw-semibold" :class="corCarga(d.aulas_semana)">
                                     {{ d.aulas_semana ?? '—' }}
                                 </td>
-                                <td>
-                                    <code class="text-secondary" style="font-size:.8rem">{{ d.horario }}</code>
-                                </td>
+                                <td></td>
                             </tr>
 
                         </template>

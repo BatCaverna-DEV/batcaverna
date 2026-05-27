@@ -20,6 +20,9 @@ const Professor = banco.sequelize.define('professores', {
     },
     status: {
         type: banco.Sequelize.INTEGER,
+    },
+    tipo: {
+        type: banco.Sequelize.INTEGER,  // 1=Docente, 2=Administrador
     }
 })
 

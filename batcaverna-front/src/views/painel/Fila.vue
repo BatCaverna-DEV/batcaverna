@@ -5,7 +5,6 @@ import { apiFetch } from '@/services/http.js'
 
 const semestres     = ref([])
 const semestreAtual = ref('')
-const horariosRuins = ref([])
 const professores   = ref([])
 const carregando    = ref(true)
 const erro          = ref('')
@@ -16,7 +15,6 @@ onMounted(async () => {
     const data       = await resp.json()
     semestres.value     = data.semestres
     semestreAtual.value = data.semestreAtual
-    horariosRuins.value = data.horariosRuins
     professores.value   = data.professores
   } else {
     erro.value = 'Não foi possível carregar a fila.'
@@ -42,12 +40,6 @@ function corUltimaVez(s) {
   return 'badge-fila-servindo'
 }
 
-const iconeHorario = {
-  'Segunda - 07:00': 'fa-sun',
-  'Sexta - 18:00':   'fa-moon',
-  'Sexta - Noite':   'fa-star',
-  'Três Noites':     'fa-calendar-week',
-}
 </script>
 
 <template>
@@ -58,7 +50,7 @@ const iconeHorario = {
     <!-- Cabeçalho -->
     <div class="pagina-header">
       <h4>
-        <i class="fa-solid fa-list-ol me-2"></i>Fila de Horários Ruins
+        <i class="fa-solid fa-list-ol me-2"></i>Fila
       </h4>
       <span class="badge bg-secondary text-white" style="font-size:.72rem; font-weight:600; letter-spacing:.05em">
         Semestre Atual: {{ semestreAtual }}
@@ -79,26 +71,6 @@ const iconeHorario = {
       </div>
 
       <template v-else>
-
-        <!-- Descrição + Horários Ruins -->
-        <div class="info-block mb-4">
-          <p class="text-muted small mb-3">
-            Para garantir equidade entre os docentes, os horários abaixo são distribuídos
-            em regime de rodízio semestral. A fila determina a ordem de quem ficará com
-            cada situação — quem foi escalado há mais tempo tem prioridade para as próximas
-            alocações.
-          </p>
-          <div class="d-flex flex-wrap gap-2">
-            <span
-              v-for="h in horariosRuins"
-              :key="h"
-              class="horario-ruim-badge"
-            >
-              <i :class="`fa-solid ${iconeHorario[h] ?? 'fa-clock'} me-1`"></i>
-              {{ h }}
-            </span>
-          </div>
-        </div>
 
         <!-- Servindo este semestre -->
         <div class="secao-bloco mb-4">
@@ -252,26 +224,6 @@ const iconeHorario = {
 </template>
 
 <style scoped>
-/* ── Info block ───────────────────────────────────────────────────────────── */
-.info-block {
-  background: #f8f9fa;
-  border: 1px solid #dee2e6;
-  border-radius: .5rem;
-  padding: 1rem 1.25rem;
-}
-
-.horario-ruim-badge {
-  display: inline-flex;
-  align-items: center;
-  background: #212529;
-  color: #fff;
-  font-size: .75rem;
-  font-weight: 600;
-  letter-spacing: .04em;
-  padding: .35rem .75rem;
-  border-radius: 2rem;
-}
-
 /* ── Blocos de seção ──────────────────────────────────────────────────────── */
 .secao-bloco {
   border: 1px solid #dee2e6;

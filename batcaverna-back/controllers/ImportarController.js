@@ -115,7 +115,6 @@ class ImportarController {
             for (const row of data) {
                 const turmaCodigo   = row[1]?.toString().trim()
                 const componenteRaw = row[2]?.toString().trim()
-                const horarioRaw    = row[8]?.toString().trim()
 
                 if (!turmaCodigo || !componenteRaw) continue
 
@@ -144,7 +143,6 @@ class ImportarController {
                     continue
                 }
 
-                const horario      = (!horarioRaw || horarioRaw === '-') ? null : horarioRaw
                 const hsPorAula    = curso.categoria === 1 ? 40 : 20
                 const aulas_semana = Math.round(parsed.carga / hsPorAula)
 
@@ -157,7 +155,6 @@ class ImportarController {
                         codigo:      curso.categoria,
                         status:      1,
                         ministrada:  0,
-                        horario,
                         aulas_semana,
                     },
                 })

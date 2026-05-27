@@ -7,11 +7,16 @@ import { Op }    from 'sequelize'
 class ProfessorController {
 
     index = async (req, res)=>{
+        const mostrarInativos = req.query.inativos === 'true'
+
+        const where = mostrarInativos ? {} : { status: { [Op.ne]: 3 } }
+
         const professores = await Professor.findAll({
+            where,
             include: [{
                 model: Usuario,
                 as: 'usuario',
-                attributes: ['id', 'username', 'categoria', 'status'] // não traga o password
+                attributes: ['id', 'username', 'categoria', 'status']
             }],
             order: [['nome', 'ASC']],
         })
@@ -70,7 +75,7 @@ class ProfessorController {
                     status:       1,
                     professor_id: { [Op.not]: null },
                 },
-                attributes: ['id', 'codigo', 'descricao', 'aulas_semana', 'carga', 'horario', 'professor_id'],
+                attributes: ['id', 'codigo', 'descricao', 'aulas_semana', 'carga', 'professor_id'],
                 include: [{ model: Turma, as: 'turma', attributes: ['codigo', 'descricao'] }],
                 order: [['descricao', 'ASC']],
             })
@@ -96,6 +101,32 @@ class ProfessorController {
             resultado.sort((a, b) => b.aulas_semana - a.aulas_semana || a.nome.localeCompare(b.nome))
 
             return res.status(200).json(resultado)
+        } catch (err) {
+            return res.status(500).json({ message: err.message })
+        }
+    }
+
+    alterarStatus = async (req, res) => {
+        try {
+            const { id } = req.params
+            const { status } = req.body
+
+            if (![1, 2, 3].includes(Number(status))) {
+                return res.status(400).json({ message: 'Status inválido. Use 1 (Ativo), 2 (Afastado) ou 3 (Inativo).' })
+            }
+
+            const professor = await Professor.findByPk(id, {
+                include: [{ model: Usuario, as: 'usuario' }]
+            })
+            if (!professor) return res.status(404).json({ message: 'Professor não encontrado.' })
+
+            if (professor.usuario?.categoria === 1) {
+                return res.status(403).json({ message: 'Não é possível alterar o status do Supremo.' })
+            }
+
+            await professor.update({ status: Number(status) })
+
+            return res.status(200).json({ message: 'Status atualizado com sucesso.', status: professor.status })
         } catch (err) {
             return res.status(500).json({ message: err.message })
         }

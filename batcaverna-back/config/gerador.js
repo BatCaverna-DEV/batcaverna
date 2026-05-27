@@ -18,7 +18,6 @@ import Motivo     from '../models/Motivo.js'
 // Nível 1 — dependem de Professor ou Calendário
 import Usuario    from '../models/Usuario.js'
 import Curso      from '../models/Curso.js'
-import Dia        from '../models/Dia.js'
 
 // Nível 2 — depende de Curso + Calendário
 import Turma      from '../models/Turma.js'
@@ -26,10 +25,7 @@ import Turma      from '../models/Turma.js'
 // Nível 3 — depende de Professor + Turma
 import Diario     from '../models/Diario.js'
 
-// Nível 4 — depende de Diario + Dia
-import Horario    from '../models/Horario.js'
-
-// Nível 5 — depende de Professor + Motivo
+// Nível 4 — depende de Professor + Motivo
 import Fila       from '../models/Fila.js'
 
 // ── Leitura dos flags da linha de comando ─────────────────────────────────────
@@ -44,10 +40,8 @@ const models = [
     { model: Motivo,     nome: 'motivos'      },
     { model: Usuario,    nome: 'usuarios'     },
     { model: Curso,      nome: 'cursos'       },
-    { model: Dia,        nome: 'dias'         },
     { model: Turma,      nome: 'turmas'       },
     { model: Diario,     nome: 'diarios'      },
-    { model: Horario,    nome: 'horarios'     },
     { model: Fila,       nome: 'filas'        },
 ]
 
