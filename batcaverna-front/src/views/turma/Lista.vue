@@ -14,6 +14,10 @@
   const cursos      = ref([])
   const calendarios = ref([])
 
+  // --- exclusão ---
+  const excluindo        = ref(null)   // turma sendo confirmada
+  const excluindoLoading = ref(false)
+
   async function abrirEdicao(turma) {
     erroEdicao.value = ''
     editando.value = {
@@ -63,6 +67,29 @@
     } else {
       const msg = await r.json()
       erroEdicao.value = msg.message
+    }
+  }
+
+  function confirmarExclusao(turma) {
+    excluindo.value = turma
+  }
+
+  function cancelarExclusao() {
+    excluindo.value = null
+  }
+
+  async function excluirTurma() {
+    excluindoLoading.value = true
+    const r = await apiFetch('/turma/' + excluindo.value.id, { method: 'DELETE' })
+    const data = await r.json()
+    excluindoLoading.value = false
+
+    if (r.ok) {
+      turmas.value = turmas.value.filter(t => t.id !== excluindo.value.id)
+      excluindo.value = null
+    } else {
+      alert('ERRO: ' + data.message)
+      excluindo.value = null
     }
   }
 
@@ -122,7 +149,7 @@
                   <ul class="dropdown-menu dropdown-menu-end shadow-sm">
                     <li><a class="dropdown-item" href="#" @click.prevent="abrirEdicao(turma)"><i class="fa-solid fa-pen me-2 text-secondary"></i>Editar</a></li>
                     <li><hr class="dropdown-divider my-1"></li>
-                    <li><a class="dropdown-item text-danger" href="#"><i class="fa-solid fa-trash me-2"></i>Excluir</a></li>
+                    <li><a class="dropdown-item text-danger" href="#" @click.prevent="confirmarExclusao(turma)"><i class="fa-solid fa-trash me-2"></i>Excluir</a></li>
                   </ul>
                 </div>
               </td>
@@ -136,6 +163,59 @@
     </div>
 
   </div>
+
+  <!-- Modal Confirmar Exclusão -->
+  <Teleport to="body">
+    <div v-if="excluindo" class="modal-backdrop-vue" @click.self="cancelarExclusao">
+      <div class="modal-dialog m-auto" style="max-width: 460px;">
+        <div class="modal-content">
+
+          <div class="modal-header">
+            <h5 class="modal-title text-danger">
+              <i class="fa-solid fa-triangle-exclamation me-2"></i>Excluir Turma
+            </h5>
+            <button type="button" class="btn-close" @click="cancelarExclusao" :disabled="excluindoLoading"></button>
+          </div>
+
+          <div class="modal-body">
+            <p class="mb-2">
+              Você está prestes a excluir a turma:
+            </p>
+            <p class="fw-semibold mb-1">
+              <span class="badge bg-secondary font-monospace me-2">{{ excluindo.codigo }}</span>
+              {{ excluindo.descricao }}
+            </p>
+
+            <div v-if="excluindo.qtd_diarios > 0" class="alert alert-warning py-2 mt-3 mb-0">
+              <i class="fa-solid fa-circle-exclamation me-2"></i>
+              Esta turma possui
+              <strong>{{ excluindo.qtd_diarios }} diário{{ excluindo.qtd_diarios !== 1 ? 's' : '' }}</strong>
+              vinculado{{ excluindo.qtd_diarios !== 1 ? 's' : '' }}, que
+              <strong>também será{{ excluindo.qtd_diarios !== 1 ? 'ão' : '' }} excluído{{ excluindo.qtd_diarios !== 1 ? 's' : '' }}</strong>.
+            </div>
+            <div v-else class="alert alert-secondary py-2 mt-3 mb-0">
+              <i class="fa-solid fa-circle-info me-2"></i>
+              Esta turma não possui diários vinculados.
+            </div>
+
+            <p class="text-muted small mt-3 mb-0">Esta ação não pode ser desfeita.</p>
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline-secondary" @click="cancelarExclusao" :disabled="excluindoLoading">
+              Cancelar
+            </button>
+            <button type="button" class="btn btn-danger px-4" @click="excluirTurma" :disabled="excluindoLoading">
+              <span v-if="excluindoLoading" class="spinner-border spinner-border-sm me-2" role="status"></span>
+              <i v-else class="fa-solid fa-trash me-2"></i>
+              {{ excluindoLoading ? 'Excluindo…' : 'Excluir' }}
+            </button>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </Teleport>
 
   <!-- Modal Editar Turma -->
   <Teleport to="body">
