@@ -105,7 +105,7 @@
           <i class="fa-solid fa-eye me-1"></i>
           {{ mostrarInativos ? 'Ocultar inativos' : 'Mostrar inativos' }}
         </button>
-        <RouterLink v-if="supremo" class="btn btn-dark btn-sm px-3" to="/professor/cadastro">
+        <RouterLink v-if="gestor" class="btn btn-dark btn-sm px-3" to="/professor/cadastro">
           <i class="fa-solid fa-plus me-1"></i>Novo
         </RouterLink>
         <RouterLink class="btn btn-outline-secondary btn-sm" to="/admin">
