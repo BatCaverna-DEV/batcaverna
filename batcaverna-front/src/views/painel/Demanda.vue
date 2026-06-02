@@ -569,6 +569,10 @@ async function liberar(tIdx, dIdx, diarioId) {
                     <td class="text-center text-muted" style="width:6%">
                       {{ diario.carga }}h
                     </td>
+                    <td class="text-center" style="width:8%">
+                      <code class="text-dark">{{ diario.aulas_semana ?? '—' }}</code>
+                      <div class="text-muted" style="font-size:.68rem">aulas/sem.</div>
+                    </td>
                     <td class="text-end" style="width:10%">
                       <button
                         class="btn btn-sm btn-outline-danger"
