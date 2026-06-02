@@ -546,7 +546,7 @@ async function liberar(tIdx, dIdx, diarioId) {
               <div class="grupo-turma__header">
                 <div class="d-flex align-items-center gap-2">
                   <i class="fa-solid fa-users-rectangle text-muted small"></i>
-                  <span class="fw-bold">{{ labelTurma(grupo.turma.codigo) }}</span>
+                  <span class="fw-bold">{{ grupo.turma.descricao }}</span>
                   <span class="badge bg-secondary font-mono" style="font-size:.68rem">
                     {{ grupo.turma.codigo }}
                   </span>
