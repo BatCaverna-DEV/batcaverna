@@ -116,6 +116,10 @@ class ProfessorController {
             })
             if (!professor) return res.status(404).json({ message: 'Professor não encontrado.' })
 
+            if (professor.usuario?.categoria === 1 && req.userCategoria !== 1) {
+                return res.status(403).json({ message: 'Apenas o Supremo pode editar os próprios dados.' })
+            }
+
             const duplicado = await Professor.findOne({
                 where: {
                     id: { [Op.ne]: id },

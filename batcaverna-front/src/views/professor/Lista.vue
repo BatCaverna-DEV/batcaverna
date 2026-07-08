@@ -244,9 +244,12 @@
                       </li>
                     </template>
 
+                    <!-- Editar (Gestor + Supremo) -->
+                    <li><hr class="dropdown-divider my-1"></li>
+                    <li><a class="dropdown-item" href="#" @click.prevent="abrirEdicao(professor)"><i class="fa-solid fa-pen me-2 text-secondary"></i>Editar</a></li>
+
+                    <!-- Excluir (apenas Supremo) -->
                     <template v-if="supremo">
-                      <li><hr class="dropdown-divider my-1"></li>
-                      <li><a class="dropdown-item" href="#" @click.prevent="abrirEdicao(professor)"><i class="fa-solid fa-pen me-2 text-secondary"></i>Editar</a></li>
                       <li><a class="dropdown-item text-danger" href="#"><i class="fa-solid fa-trash me-2"></i>Excluir</a></li>
                     </template>
 
