@@ -8,6 +8,7 @@ import professor               from '../controllers/ProfessorController.js'
 router.get('/',              auth,           professor.index)          // Supremo + Coordenador
 router.get('/carga',         auth,           professor.cargaHoraria)   // Supremo + Coordenador
 router.post('/cadastro',     auth, ehGestor,  professor.cadastrar)     // Supremo + Coordenador
+router.put('/:id',           auth, ehSupremo, professor.atualizar)     // apenas Supremo
 router.put('/:id/status',    auth, ehGestor,  professor.alterarStatus) // Supremo + Coordenador
 router.put('/:id/promover',  auth, ehSupremo, professor.promover)      // apenas Supremo
 

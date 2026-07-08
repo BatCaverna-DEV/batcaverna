@@ -106,6 +106,46 @@ class ProfessorController {
         }
     }
 
+    atualizar = async (req, res) => {
+        try {
+            const { id } = req.params
+            const { nome, siape, email, tipo } = req.body
+
+            const professor = await Professor.findByPk(id, {
+                include: [{ model: Usuario, as: 'usuario' }]
+            })
+            if (!professor) return res.status(404).json({ message: 'Professor não encontrado.' })
+
+            const duplicado = await Professor.findOne({
+                where: {
+                    id: { [Op.ne]: id },
+                    [Op.or]: [
+                        { siape: siape ?? professor.siape },
+                        { email: email ?? professor.email },
+                    ]
+                }
+            })
+            if (duplicado) {
+                return res.status(409).json({ message: 'SIAPE e/ou E-mail já cadastrados para outro professor!' })
+            }
+
+            await professor.update({
+                nome:  nome  ?? professor.nome,
+                siape: siape ?? professor.siape,
+                email: email ?? professor.email,
+                tipo:  tipo  ?? professor.tipo,
+            })
+
+            if (professor.usuario && siape && siape !== professor.usuario.username) {
+                await professor.usuario.update({ username: siape })
+            }
+
+            return res.status(200).json(professor)
+        } catch (err) {
+            return res.status(500).json({ message: err.message })
+        }
+    }
+
     alterarStatus = async (req, res) => {
         try {
             const { id } = req.params

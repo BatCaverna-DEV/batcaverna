@@ -18,6 +18,10 @@
   const carregando     = ref(null) // id do professor em operação
   const mostrarInativos = ref(false)
 
+  // --- edição ---
+  const editando   = ref(null)
+  const erroEdicao = ref('')
+
   const carregar = async () => {
     const query = mostrarInativos.value ? '?inativos=true' : ''
     const resposta = await apiFetch(`/professor${query}`)
@@ -86,6 +90,43 @@
       await carregar()
     } else {
       alert('ERRO ' + resposta.status + ': ' + dados.message)
+    }
+  }
+
+  function abrirEdicao(professor) {
+    erroEdicao.value = ''
+    editando.value = {
+      id:    professor.id,
+      nome:  professor.nome,
+      siape: professor.siape,
+      email: professor.email,
+      tipo:  professor.tipo,
+    }
+  }
+
+  function fecharEdicao() {
+    editando.value = null
+    erroEdicao.value = ''
+  }
+
+  async function salvarEdicao() {
+    erroEdicao.value = ''
+    const payload = {
+      nome:  editando.value.nome,
+      siape: editando.value.siape,
+      email: editando.value.email,
+      tipo:  editando.value.tipo,
+    }
+    const resposta = await apiFetch(`/professor/${editando.value.id}`, {
+      method: 'PUT',
+      body: payload,
+    })
+    if (resposta.ok) {
+      await carregar()
+      fecharEdicao()
+    } else {
+      const dados = await resposta.json()
+      erroEdicao.value = dados.message
     }
   }
 </script>
@@ -205,7 +246,7 @@
 
                     <template v-if="supremo">
                       <li><hr class="dropdown-divider my-1"></li>
-                      <li><a class="dropdown-item" href="#"><i class="fa-solid fa-pen me-2 text-secondary"></i>Editar</a></li>
+                      <li><a class="dropdown-item" href="#" @click.prevent="abrirEdicao(professor)"><i class="fa-solid fa-pen me-2 text-secondary"></i>Editar</a></li>
                       <li><a class="dropdown-item text-danger" href="#"><i class="fa-solid fa-trash me-2"></i>Excluir</a></li>
                     </template>
 
@@ -222,6 +263,64 @@
 
     </div>
   </div>
+
+  <!-- Modal Editar Professor -->
+  <Teleport to="body">
+    <div v-if="editando" class="modal-backdrop-vue" @click.self="fecharEdicao">
+      <div class="modal-dialog modal-lg m-auto">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">
+              <i class="fa-solid fa-pen me-2"></i>Editar Professor
+            </h5>
+            <button type="button" class="btn-close" @click="fecharEdicao"></button>
+          </div>
+          <form @submit.prevent="salvarEdicao">
+            <div class="modal-body">
+
+              <div v-if="erroEdicao" class="alert alert-danger py-2 mb-3">
+                <i class="fa-solid fa-circle-exclamation me-2"></i>{{ erroEdicao }}
+              </div>
+
+              <div class="row g-3">
+
+                <div class="col-sm-3">
+                  <label class="form-label">SIAPE</label>
+                  <input v-model="editando.siape" type="text" required class="form-control font-monospace">
+                </div>
+
+                <div class="col-sm-9">
+                  <label class="form-label">Nome Completo</label>
+                  <input v-model="editando.nome" type="text" required class="form-control">
+                </div>
+
+                <div class="col-sm-8">
+                  <label class="form-label">E-mail</label>
+                  <input v-model="editando.email" type="email" required class="form-control">
+                </div>
+
+                <div class="col-sm-4">
+                  <label class="form-label">Tipo</label>
+                  <select v-model="editando.tipo" required class="form-select">
+                    <option :value="1">Docente</option>
+                    <option :value="2">Administrador</option>
+                  </select>
+                </div>
+
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-outline-secondary" @click="fecharEdicao">Cancelar</button>
+              <button type="submit" class="btn btn-dark px-4">
+                <i class="fa-solid fa-floppy-disk me-2"></i>Salvar
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </Teleport>
+
 </template>
 
 <style scoped>
@@ -233,4 +332,32 @@
 .badge-tipo-admin     { background: #e2d9f3; color: #3d1f72; }
 
 .tr-inativo td        { opacity: .5; }
+
+.modal-backdrop-vue {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, .5);
+  z-index: 1055;
+  display: flex;
+  align-items: flex-start;
+  padding: 60px 16px 40px;
+  overflow-y: auto;
+}
+.modal-backdrop-vue :deep(.modal-content) {
+  background-color: #fff;
+  border: 1px solid rgba(0, 0, 0, .175);
+  border-radius: .5rem;
+}
+.modal-backdrop-vue :deep(.modal-header) {
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid #dee2e6;
+}
+.modal-backdrop-vue :deep(.modal-body) {
+  padding: 1.5rem;
+}
+.modal-backdrop-vue :deep(.modal-footer) {
+  padding: 1rem 1.5rem;
+  border-top: 1px solid #dee2e6;
+  gap: .5rem;
+}
 </style>
