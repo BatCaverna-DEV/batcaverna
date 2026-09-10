@@ -267,3 +267,79 @@ body {
   margin-top: 1.25rem;
   border-top: 1px solid #dee2e6;
 }
+
+/* ── Planos de Ensino ─────────────────────────────────────────────────────── */
+
+.badge-plano-1 { background-color: #dc3545 !important; color: #fff !important; }
+.badge-plano-2 { background-color: #fd7e14 !important; color: #fff !important; }
+.badge-plano-3 { background-color: #ffc107 !important; color: #212529 !important; }
+.badge-plano-4 { background-color: #0d6efd !important; color: #fff !important; }
+.badge-plano-5 { background-color: #20c997 !important; color: #fff !important; }
+.badge-plano-6 { background-color: #198754 !important; color: #fff !important; }
+
+.plano-resumo {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .5rem;
+}
+
+.plano-chip {
+  flex: 1 1 150px;
+  border: 1px solid #dee2e6;
+  border-radius: .5rem;
+  padding: .55rem .7rem;
+  background: #fff;
+  cursor: pointer;
+  text-align: left;
+  transition: border-color .15s, box-shadow .15s, transform .15s;
+}
+
+.plano-chip:hover {
+  border-color: #adb5bd;
+  transform: translateY(-1px);
+}
+
+.plano-chip.ativo {
+  border-color: #212529;
+  box-shadow: 0 0 0 1px #212529 inset;
+}
+
+.plano-chip .chip-valor {
+  font-size: 1.35rem;
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.plano-chip .chip-rotulo {
+  font-size: .72rem;
+  color: #6c757d;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+}
+
+.plano-chip .chip-barra {
+  height: 3px;
+  border-radius: 2px;
+  margin-top: .45rem;
+}
+
+.plano-trilha {
+  display: inline-flex;
+  gap: 3px;
+  vertical-align: middle;
+}
+
+.plano-trilha span {
+  width: 14px;
+  height: 5px;
+  border-radius: 3px;
+  background: #e9ecef;
+}
+
+.plano-trilha span.cumprida { background: #198754; }
+.plano-trilha span.atual    { background: #212529; }
+
+.plano-sem-professor {
+  color: #adb5bd;
+  font-style: italic;
+}

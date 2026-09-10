@@ -41,4 +41,7 @@ app.use('/painel', painel);
 import fila from './routes/fila.js';
 app.use('/fila', fila);
 
+import plano from './routes/plano.js';
+app.use('/plano', plano);
+
 app.listen(port, () => {console.log(`Servidor rodando em http://localhost:${port}`)})

@@ -28,6 +28,9 @@ import CadastroCurso from '@/views/curso/Cadastro.vue'
 import ListaDiario from '@/views/diario/Lista.vue'
 import CadastroDiario from '@/views/diario/Cadastro.vue'
 
+//Plano de Ensino
+import ListaPlano from '@/views/plano/Lista.vue'
+
 //Padrões
 import Admin from '../views/admin/Admin.vue'
 import NotFound from "@/views/admin/NotFound.vue";
@@ -161,6 +164,19 @@ const router = createRouter({
                   name: 'diario.cadastro',
                   component: CadastroDiario,
                   meta: { title: 'Cad-Diario' },
+              }
+          ]
+      },
+      {
+          path: '/plano',
+          component: RouterViewOnly,
+          meta: { group: 'plano', requiresAuth: true },
+          children: [
+              {
+                  path: 'lista',
+                  name: 'plano.lista',
+                  component: ListaPlano,
+                  meta: { title: 'Lis-Plano' },
               }
           ]
       },
