@@ -29,8 +29,12 @@ const Diario = banco.sequelize.define('diarios', {
     aulas_semana:{
         type: banco.Sequelize.INTEGER,
     },
+    // Status do plano de ensino:
+    // 1=Pendente, 2=Entregue ao Pedagógico, 3=Revisado pelo Pedagógico,
+    // 4=Entregue ao Conselho, 5=Aprovado pelo Conselho, 6=Inserido no Diário
     plano:{
         type: banco.Sequelize.INTEGER,
+        defaultValue: 1,
     }
 })
 
