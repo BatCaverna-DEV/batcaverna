@@ -17,7 +17,7 @@ class FilaController {
 
     listar = async (req, res) => {
         try {
-            const [registros, motivosDb, todosProfessores] = await Promise.all([
+            const [registros, motivosDb, todosProfessores, calendarioAtivo] = await Promise.all([
                 Fila.findAll({
                     include: [
                         { model: Professor, as: 'professor', attributes: ['nome'], where: { status: 1 }, required: true },
@@ -33,6 +33,11 @@ class FilaController {
                     where: { status: 1 },
                     attributes: ['nome'],
                 }),
+                Calendario.findOne({
+                    where: { status: 1 },
+                    attributes: ['ano', 'semestre'],
+                    order: [['ano', 'DESC'], ['semestre', 'DESC']],
+                }),
             ])
 
             const horariosRuins = motivosDb.map(m => m.descricao)
@@ -42,8 +47,17 @@ class FilaController {
             for (const r of registros) {
                 semestresSet.add(semKey(r.calendario.ano, r.calendario.semestre))
             }
-            const semestres   = [...semestresSet].sort((a, b) => semOrdem(a) - semOrdem(b))
-            const semestreAtual = semestres.at(-1) ?? ''
+
+            // O semestre corrente vem do calendário ativo, não do último registro da
+            // fila: no início do semestre ainda não há ninguém escalado, e inferir dos
+            // registros faria a tela apontar o semestre anterior.
+            const semestreAtual = calendarioAtivo
+                ? semKey(calendarioAtivo.ano, calendarioAtivo.semestre)
+                : (semestresSet.size ? [...semestresSet].sort((a, b) => semOrdem(a) - semOrdem(b)).at(-1) : '')
+
+            if (semestreAtual) semestresSet.add(semestreAtual)
+
+            const semestres = [...semestresSet].sort((a, b) => semOrdem(a) - semOrdem(b))
 
             // Agrupa registros por professor, construindo o histórico
             const mapa = {}
