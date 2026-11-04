@@ -10,8 +10,10 @@
 
   const router = useRouter()
   const calendarios = ref([])
+  const mensagem    = ref('')
+  const carregando  = ref(null) // id do calendário em operação
 
-  onMounted(async () => {
+  const carregar = async () => {
     let resposta = await apiFetch('/calendario')
     if (resposta.ok) {
       calendarios.value = await resposta.json()
@@ -20,7 +22,27 @@
       alert('ERRO ' + resposta.status + ': ' + msg.message)
       router.push('/admin')
     }
-  })
+  }
+
+  const finalizar = async (calendario) => {
+    if (!confirm(`Finalizar o ${calendario.descricao}? Todas as turmas e diários dele também ficarão inativos.`)) return
+
+    carregando.value = calendario.id
+    mensagem.value = ''
+
+    const resposta = await apiFetch(`/calendario/${calendario.id}/finalizar`, { method: 'PUT' })
+    const dados = await resposta.json()
+    carregando.value = null
+
+    if (resposta.ok) {
+      mensagem.value = dados.message
+      await carregar()
+    } else {
+      alert('ERRO ' + resposta.status + ': ' + dados.message)
+    }
+  }
+
+  onMounted(carregar)
 </script>
 
 <template>
@@ -37,6 +59,11 @@
           <i class="fa-solid fa-arrow-left me-1"></i>Voltar
         </RouterLink>
       </div>
+    </div>
+
+    <div v-if="mensagem" class="alert alert-success alert-dismissible fade show py-2" role="alert">
+      <i class="fa-solid fa-circle-check me-2"></i>{{ mensagem }}
+      <button type="button" class="btn-close" @click="mensagem = ''" aria-label="Close"></button>
     </div>
 
     <div class="pagina-body">
@@ -72,8 +99,15 @@
                     <i class="fa-solid fa-ellipsis-vertical"></i>
                   </button>
                   <ul class="dropdown-menu dropdown-menu-end shadow-sm">
-                    <li><a class="dropdown-item" href="#"><i class="fa-solid fa-flag-checkered me-2 text-secondary"></i>Finalizar</a></li>
-                    <li><hr class="dropdown-divider my-1"></li>
+                    <template v-if="calendario.status === 1">
+                      <li>
+                        <button class="dropdown-item" type="button" :disabled="carregando === calendario.id" @click="finalizar(calendario)">
+                          <span v-if="carregando === calendario.id" class="spinner-border spinner-border-sm me-2"></span>
+                          <i v-else class="fa-solid fa-flag-checkered me-2 text-secondary"></i>Finalizar
+                        </button>
+                      </li>
+                      <li><hr class="dropdown-divider my-1"></li>
+                    </template>
                     <li><a class="dropdown-item text-danger" href="#"><i class="fa-solid fa-trash me-2"></i>Excluir</a></li>
                   </ul>
                 </div>

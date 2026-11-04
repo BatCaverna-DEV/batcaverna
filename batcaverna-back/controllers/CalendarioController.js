@@ -1,4 +1,7 @@
 import Calendario from '../models/Calendario.js';
+import Turma from '../models/Turma.js';
+import Diario from '../models/Diario.js';
+import banco from '../config/banco.js';
 
 class CalendarioController {
 
@@ -29,6 +32,47 @@ class CalendarioController {
         // })
 
     }//Fim do Cadastrar
+
+    finalizar = async (req, res) => {
+        try {
+            const calendario = await Calendario.findByPk(req.params.id)
+            if (!calendario) {
+                return res.status(404).json({ message: 'Calendário não encontrado.' })
+            }
+            if (calendario.status === 0) {
+                return res.status(400).json({ message: 'Este calendário já está finalizado.' })
+            }
+
+            // Fechar o calendário encerra o semestre: as turmas dele e os diários
+            // dessas turmas ficam inativos (status 0). Tudo ou nada.
+            const { turmasInativadas, diariosInativados } = await banco.sequelize.transaction(async (t) => {
+                const turmas = await Turma.findAll({
+                    where: { calendario_id: calendario.id },
+                    attributes: ['id'],
+                    transaction: t,
+                })
+                const turmaIds = turmas.map(turma => turma.id)
+
+                const [diariosInativados] = turmaIds.length
+                    ? await Diario.update({ status: 0 }, { where: { turma_id: turmaIds, status: 1 }, transaction: t })
+                    : [0]
+                const [turmasInativadas] = await Turma.update({ status: 0 }, { where: { calendario_id: calendario.id, status: 1 }, transaction: t })
+
+                await calendario.update({ status: 0 }, { transaction: t })
+
+                return { turmasInativadas, diariosInativados }
+            })
+
+            return res.status(200).json({
+                message: `${calendario.descricao} finalizado com sucesso. ${turmasInativadas} turma(s) e ${diariosInativados} diário(s) inativados.`,
+                calendario,
+                turmasInativadas,
+                diariosInativados,
+            })
+        } catch (err) {
+            return res.status(500).json({ message: err.message })
+        }
+    }//Fim do finalizar
 
     semana = async (req, res) => {
         const data = new Date(req.params.data)
