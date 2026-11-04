@@ -7,6 +7,7 @@ import { ehSupremo } from '../helpers/role.js'
 
 router.get('/',          auth,            calendario.index)      // Supremo + Coordenador
 router.post('/cadastro', auth, ehSupremo, calendario.cadastrar)  // apenas Supremo
+router.put('/:id/finalizar', auth, ehSupremo, calendario.finalizar)  // apenas Supremo
 router.get('/semana/:data', calendario.semana)
 
 export default router
