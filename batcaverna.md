@@ -116,6 +116,26 @@ Middleware de autorização: `auth` (valida JWT) → `ehSupremo` (cat=1) / `ehGe
 | POST | `/painel/assumir` | Aloca professor a um diário |
 | POST | `/painel/liberar` | Remove alocação de professor |
 
+### Planos de Ensino (`/plano`)
+
+| Método | Rota | Auth | Descrição |
+|--------|------|------|-----------|
+| GET | `/plano` | auth + ehGestor | Lista diários ativos com o status do plano. Escopo vem do token: Supremo vê todos os cursos, Coordenador só o que coordena. |
+| PUT | `/plano/:id` | auth + ehGestor | Altera a etapa do plano. Coordenador: apenas o próprio curso e uma etapa por vez. Supremo: qualquer etapa, qualquer curso. |
+
+Etapas do campo `Diario.plano` (`defaultValue: 1`):
+
+| Valor | Etapa |
+|-------|-------|
+| 1 | Pendente |
+| 2 | Entregue ao Pedagógico |
+| 3 | Revisado pelo Pedagógico |
+| 4 | Entregue ao Conselho |
+| 5 | Aprovado pelo Conselho |
+| 6 | Inserido no Diário |
+
+Diários anteriores à criação do campo têm `plano` nulo e são tratados como **Pendente** na leitura (`normalizar()` no controller e `planoNormalizado()` no front). Tela: `/plano/lista` (`views/plano/Lista.vue`).
+
 ### Fila (`/fila`) — sem autenticação
 
 | Método | Rota | Descrição |
