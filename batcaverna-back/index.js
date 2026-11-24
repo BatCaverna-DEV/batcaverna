@@ -44,4 +44,7 @@ app.use('/fila', fila);
 import plano from './routes/plano.js';
 app.use('/plano', plano);
 
+import integracao from './routes/integracao.js';
+app.use('/integracao', integracao);
+
 app.listen(port, () => {console.log(`Servidor rodando em http://localhost:${port}`)})
