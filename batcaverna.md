@@ -142,6 +142,16 @@ Diários anteriores à criação do campo têm `plano` nulo e são tratados como
 |--------|------|-----------|
 | GET | `/fila` | Diários não alocados |
 
+### Integração (`/integracao/v1`) — token de serviço
+
+Só leitura, para outros sistemas (GradeIF). Cabeçalho `X-Integracao-Token` igual ao `INTEGRACAO_TOKEN` do `.env`; sem o token configurado, responde 503. Formato das respostas em [`INTEGRACAO.md`](INTEGRACAO.md).
+
+| Método | Rota | Descrição |
+|--------|------|-----------|
+| GET | `/integracao/v1/calendarios` | Calendários, do mais recente para o mais antigo |
+| GET | `/integracao/v1/calendarios/:id/oferta` | Cursos, turmas e diários do calendário (com o professor de cada diário) |
+| GET | `/integracao/v1/professores` | Professores de qualquer status |
+
 ---
 
 ## Modelos de Dados
@@ -304,6 +314,7 @@ DB_NAME=batcaverna
 DB_USER=root
 DB_PASSWORD=
 JWT_SECRET=<chave_secreta>
+INTEGRACAO_TOKEN=<token_de_servico>   # vazio = rotas /integracao desligadas
 MAIL_HOST=smtp.hostinger.com
 MAIL_PORT=465
 MAIL_USER=batcaverna@batcaverna.tech
